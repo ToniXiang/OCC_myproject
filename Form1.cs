@@ -19,7 +19,7 @@ namespace 簡易的行控中心
         #region 宣告
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
-        private static SqlConnection db = new SqlConnection("Data Source=DESKTOP-Q78F81O;Initial Catalog=OCC_DB;User ID=cgibe;Password=45rain78bow_K");
+        private static SqlConnection db = new SqlConnection("Data Source=DESKTOP-Q78F81O\\192.168.36.123,1433;Initial Catalog=OCC_DB;User ID=cgibe;Password=45rain78bow_K");
         private static string[] stationNames =
         {
             "Sky Station",
@@ -40,11 +40,14 @@ namespace 簡易的行控中心
             { false, false, false, false, true, false },
             { false, false, false, false, false, true }
         };
+        public static string projectDirectory;
         public Form1()
         {
             InitializeComponent();
+            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
             this.StartPosition = FormStartPosition.CenterScreen;
-            Bitmap b = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "programming.png");
+            Bitmap b = new Bitmap(projectDirectory + "\\programming.png");
             this.Icon = Icon.FromHandle(b.GetHicon());
             timer1.Start();
             TrainInfo.info = stationNames;
@@ -519,8 +522,8 @@ namespace 簡易的行控中心
         public void change_image(string path)
         {
             if (cur_st.isStation()) return;
-            if (!next_bool) ((Track)cur_st).picture1.Image = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "umtodm" + path + ".png");
-            else ((Track)cur_st).picture2.Image = new Bitmap(AppDomain.CurrentDomain.BaseDirectory + "dmtoum" + path + ".png");
+            if (!next_bool) ((Track)cur_st).picture1.Image = new Bitmap(Form1.projectDirectory + "\\umtodm" + path + ".png");
+            else ((Track)cur_st).picture2.Image = new Bitmap(Form1.projectDirectory + "\\dmtoum" + path + ".png");
         }
     }
     public class TrainInfo

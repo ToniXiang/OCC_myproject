@@ -143,6 +143,7 @@ namespace 簡易的行控中心
                     {
                         //Nothing...
                     }
+                    f2.Dispose();
                 }
                 db.Close();
             }
@@ -150,15 +151,13 @@ namespace 簡易的行控中心
         }
         private void Form2_DataInputCompleted(object sender, EventArgs e)
         {
-            using(SqlCommand cmd=new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", db))
+            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", db))
             {
                 cmd.Parameters.AddWithValue("@email", Form2.email);
                 cmd.Parameters.AddWithValue("@type", Form2.type);
                 cmd.Parameters.AddWithValue("@content", Form2.content);
                 cmd.Parameters.AddWithValue("@isok", Form2.isOK);
                 cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));
-                Form2.email = Form2.type = Form2.content = "";
-                Form2.isOK = false;
                 cmd.ExecuteNonQuery();
             }
         }
@@ -269,7 +268,6 @@ namespace 簡易的行控中心
         }
         public void train_set(object sender, EventArgs e)
         {
-
             textBox2.Text = $"{trains[comboBox1.SelectedIndex].speed}km/hr";
             comboBox4.Text = trains[comboBox1.SelectedIndex].destination.name;
             comboBox3.Text = trains[comboBox1.SelectedIndex].priority.ToString();

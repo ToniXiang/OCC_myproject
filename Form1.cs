@@ -17,19 +17,11 @@ namespace 簡易的行控中心
     public partial class Form1 : Form
     {
         #region 宣告
+        public static string projectDirectory;
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
-        private static SqlConnection db = new SqlConnection("Data Source=DESKTOP-Q78F81O\\192.168.36.123,1433;Initial Catalog=OCC_DB;User ID=cgibe;Password=45rain78bow_K");
-        private static string[] stationNames =
-        {
-            "Sky Station",
-            "Sun Station",
-            "Starlight Station",
-            "Aurora Station",
-            "Celestial Station",
-            "Solaris Station",
-            "Horizon Station"
-        };
+        private static SqlConnection sqlconnection = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True");
+        private static string[] stationNames = { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
         private static bool fg = true;
         private static CheckBox[] checks;
         private static bool[,] is_check =
@@ -40,10 +32,13 @@ namespace 簡易的行控中心
             { false, false, false, false, true, false },
             { false, false, false, false, false, true }
         };
-        public static string projectDirectory;
+        private static List<Label> labels1 = new List<Label>();
+        private static List<string> tmp = new List<string>() { "高", "中", "低" };
+        private static Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         public Form1()
         {
             InitializeComponent();
+            this.DoubleBuffered = true;
             string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
             projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -54,7 +49,7 @@ namespace 簡易的行控中心
             int[] limitSpeeds = { 110, 120, 120, 120, 120, 130 };
             int[] lengths = { 13, 20, 15, 20, 17, 30 };
             int[] platform = { 2, 1, 1, 1, 1, 1, 2 };
-            int[] prio = { 1, 2, 2, 2, 3, 3, 1 };
+            int[] prio = { 0, 1, 1, 1, 2, 2, 0 };
             PictureBox[] pic1 = { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             PictureBox[] pic2 = { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
             Label[] labels = { label2, label3, label12, label13, label4, label5, label6 };
@@ -69,35 +64,58 @@ namespace 簡易的行控中心
                 tracks.Add(new Track(limitSpeeds[i], lengths[i], stations[i], stations[i + 1], pic1[i], pic2[i]));
             }
             tracks.Add(null);
-            for(int i = 0; i < 7; i++)
+            for (int i = 0; i < 7; i++)
             {
                 stations[i].set_connect(tracks[i], tracks[i + 1]);
             }
-            trains.Add(new Train("Apple 1104", 2, stations[0], stations[6], TrainInfo.get_next(stations[0], stations[1])));
-            trains.Add(new Train("Banana 1111", 3, stations[6], stations[0], TrainInfo.get_next(stations[6], stations[1])));
+            trains.Add(new Train("3104", 1, stations[0], stations[6], TrainInfo.get_next(stations[0], stations[1])));
+            trains.Add(new Train("3211", 2, stations[6], stations[0], TrainInfo.get_next(stations[6], stations[1])));
             comboBox1.Items.AddRange(trains.Select(x => x.name).ToArray());
             comboBox2.Items.AddRange(stations.Select(x => x.name).ToArray());
             comboBox4.Items.AddRange(stations.Select(x => x.name).ToArray());
-            string[] tmp = { "1", "2", "3" };
-            tmp.ToList().ForEach(x => comboBox3.Items.Add(x));
-            string[] tmp1 = { "車次", "時間", "開往", "狀態" };
-            tmp1.ToList().ForEach(x => dgv.Columns.Add(x, x));
+            tmp.ForEach(x => comboBox3.Items.Add(x));
+            tmp.ForEach(x => comboBox7.Items.Add(x));
+            List<string> tmp1 = new List<string>() { "車次", "時間", "開往", "狀態" };
+            tmp1.ForEach(x => dgv.Columns.Add(x, x));
             dgv.DefaultCellStyle.ForeColor = Color.Black;
             dgv.Columns.Cast<DataGridViewColumn>().ToList().ForEach(x => x.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells);
-            dgv.DefaultCellStyle.Font = new Font("微軟正黑體", 9);
+            dgv.DefaultCellStyle.Font = new Font("微軟正黑體", 12);
             label17.Text = "暫停模擬";
             label17.ForeColor = Color.Red;
+            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
             label11.Text = label7.Text = "";
             string[] tmp2 = { "列車事故", "突發健康事件", "恐怖襲擊", "能源故障", "乘客滯留" };
             comboBox5.Items.AddRange(tmp2);
             checks = new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
             comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
+            foreach (Control control in this.Controls)
+            {
+                if (control is TextBox || control is Label || control is GroupBox)
+                {
+                    control.MouseDown += Form1_MouseDown;
+                    control.MouseUp += Form1_MouseUp;
+                    control.MouseMove += Form1_MouseMove;
+                }
+            }
+            labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
+            labels1.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
+            MessageBox.Show("簡易的行控中心(Simple operational control center)\r\n\r\n" +
+                "1. 車站狀態\r\n請選擇車站名稱，可以調整優先序\r\n時刻表包含將進站的列車名、預估抵達時間、起始站、終點站\r\n\r\n" +
+                "2. 列車狀態及操作\r\n請選擇列車名稱，可以調整優先序、更改終點站，但先臨停\r\n調整時速請按「增速」加速度 1.0m/s² 和「減速」加速度 -0.8m/s² 增減速不超過 ±10km/h" +
+                "\r\n「煞車」煞車加速度為 -2.5 m/s² 用於急煞\r\n「啟動」加速度為 1.0m/s² 啟動，維持且不超過 110km/h\r\n車站優先序如果低於列車則不會臨停\r\n\r\n" +
+                "3. 路線地圖\r\n點選車站名可直接更改列車站狀態-車站名\r\n黑色箭頭：無列車在此行駛\r\n橘色箭頭：有列車要進站或離站\r\n藍色箭頭：有列車站在此行駛\r\n紅色箭頭：有安全問題\r\n\r\n" +
+                "4. 事件處理\r\n選擇事件及列車，勾選聯絡單位，詳細內容可為空\r\n模擬事件回報功能\r\n\r\n"+
+                $"© 2024 陳國翔\r\n\r\nhttps://github.com/ChenGuoXiang940/NTCUST_OCC_myproject\r\n\r\n功能介绍 - 版本 {version.ToString()}", "功能簡介", MessageBoxButtons.OK);
         }
         #endregion
         #region 離開
         private void pictureBox3_Click(object sender, EventArgs e)
         {
-            Application.Exit();
+            DialogResult result= MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes)
+            {
+                Application.Exit();
+            }
         }
         #endregion
         #region 時間_多執行緒
@@ -106,20 +124,15 @@ namespace 簡易的行控中心
             label1.Text = $"日期 : {DateTime.Now.ToString("yyyy年MM月dd號")}\r\n時間 : {DateTime.Now.ToString("T")}\r\n星期 : {DateTime.Now.ToString("dddd")}";
         }
         #endregion
-        #region 介紹
-        private void textbox1_Click(object sender, EventArgs e)
+        #region 簡介
+        private async void textbox1_Click(object sender, EventArgs e)
         {
-            Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            MessageBox.Show("簡易的行控中心(Simple operational control center)\r\n1. 使用者可以自行操作列車" +
-                "\r\n2. 時刻掌握當前時間\r\n3. 使用模擬計算來預估列車的當前狀態\r\n5. 路線地圖可視化展示\r\n6. 用戶回饋連結資料庫\r\n7. 更多功能日後開發\r\n\r\n" +
-                "© 2024 陳國翔\r\n\r\n"+ "功能介绍 - 版本 " + version.ToString(), "簡介", MessageBoxButtons.OK);
-            label1.Focus();
-        }   
-        private void Form1_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("1. 車站狀態\r\n請選擇車站名稱\r\n時刻表包含將進站的列車名、預估抵達時間、起始站、終點站\r\n2. 列車狀態及操作\r\n請選擇列車名稱\r\n調整時速請按「增速」和「減速」±10km/h" +
-                "\r\n「煞車」行駛的列車經過幾秒停止\r\n「啟動」列車時速維持到110km/h\r\n3. 路線地圖\r\n黑色：無列車在此行駛" +
-                "\r\n橘色：有列車要進站或離站\r\n藍色：有列車站在此行駛\r\n紅色：有安全問題", "功能簡介", MessageBoxButtons.OK);
+            // 版本信息為 主版本.次版本.生成號.修訂號
+            MessageBox.Show("簡易的行控中心(Simple operational control center)\r\n\r\n1. 使用者可以自行操作列車" +
+                "\r\n2. 時刻掌握當前時間\r\n3. 使用模擬計算來預估列車的當前狀態\r\n5. 路線地圖可視化展示\r\n6. 緊急事件處理\r\n" +
+                "7. 用戶回饋連結資料庫\r\n8. 更多功能日後開發(維護和檢修計劃、能源管理連接資料庫)\r\n\r\n" +
+                $"© 2024 陳國翔\r\n\r\nhttps://github.com/ChenGuoXiang940/NTCUST_OCC_myproject\r\n\r\n功能介绍 - 版本 {version.ToString()}", "簡介", MessageBoxButtons.OK);
+            await FocusMethod();
         }
         #endregion
         #region 開啟/暫停
@@ -127,34 +140,46 @@ namespace 簡易的行控中心
         {
             timer2.Start();
             label17.Text = "正在模擬";
-            label17.ForeColor = Color.AliceBlue;
+            label17.ForeColor = Color.LightGreen;
+            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = true;
         }
-        private void button2_Click(object sender, EventArgs e)
+        private async void button2_Click(object sender, EventArgs e)
         {
             timer2.Stop();
             label17.Text = "暫停模擬";
             label17.ForeColor = Color.Red;
-            if (fg)
+            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
+            try
             {
-                db.Open();
-                using (Form2 f2 = new Form2())
+                if (fg)
                 {
-                    f2.Focus();
-                    f2.DataInputCompleted += Form2_DataInputCompleted;//完成將執行的函式
-                    DialogResult result = f2.ShowDialog();
-                    if (result == DialogResult.OK)
+                    fg = false;
+                    if (sqlconnection.State == ConnectionState.Closed)
                     {
-                        //Nothing...
+                        await sqlconnection.OpenAsync();
                     }
-                    f2.Dispose();
+                    using (Form2 f2 = new Form2())
+                    {
+                        f2.Focus();
+                        f2.DataInputCompleted += Form2_DataInputCompleted;
+                        DialogResult result = f2.ShowDialog();
+                        if (result == DialogResult.OK)
+                        {
+                            //Nothing...
+                        }
+                        f2.Dispose();
+                    }
+                    sqlconnection.Close();
                 }
-                db.Close();
             }
-            fg = false;
+            catch (TaskCanceledException)
+            {
+                //Nothing...
+            }
         }
         private void Form2_DataInputCompleted(object sender, EventArgs e)
         {
-            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", db))
+            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sqlconnection))
             {
                 cmd.Parameters.AddWithValue("@email", Form2.email);
                 cmd.Parameters.AddWithValue("@type", Form2.type);
@@ -203,8 +228,9 @@ namespace 簡易的行控中心
                             train.change_image("penB");
                         }
                         train.move();
-                        double u = train.speed * 1000 / 3600;
-                        double s = u * u / (2 * 10);
+                        double u = train.speed / 3.6;// 速度 m/s
+                        // 假設啟動加速度 1.0 m/s²
+                        double s = u * u / (2 * 1.0);// 加速度距離
                         if ((train.next_bool ? ((Track)train.cur_st).station1.priority : ((Track)train.cur_st).station2.priority) < train.priority)
                         {
                             train.change_image("pen");
@@ -228,7 +254,7 @@ namespace 簡易的行控中心
                         else if (train.speed > 150)
                         {
                             train.change_image("penR");
-                            throw new SpeedException($"{train.name}的速度過快，請減速!");
+                            throw new SpeedException($"{train.name} 的速度過快，請減速!");
                         }
                         else if (train.speed == 0)
                         {
@@ -245,7 +271,7 @@ namespace 簡易的行控中心
                                 if (train.cur_st == other_train.cur_st && other_train.length - train.length < 0.5)
                                 {
                                     train.change_image("penR");
-                                    throw new NearException($"{train.name}和{other_train.name}的距離過近，請減速!");
+                                    throw new NearException($"{train.name} 和 {other_train.name} 的距離過近，請減速!");
                                 }
                             }
                         }
@@ -254,35 +280,37 @@ namespace 簡易的行控中心
                 catch (Exception ex)
                 {
                     SystemSounds.Beep.Play();
-                    train.stats = $"{ex.Message}";
+                    train.stats = $" {ex.Message}";
                     comboBox1.SelectedIndex = comboBox1.FindStringExact(train.name);
-                    train_set(sender, e);
+                    train_set();
                 }
             }
-            if(comboBox1.SelectedIndex != -1) train_set(sender, e);
-            if (comboBox2.SelectedIndex != -1) station_change(sender, e);
+            if(comboBox1.SelectedIndex != -1) train_set();
+            if (comboBox2.SelectedIndex != -1) dgv_set();
         }
         #endregion
         #region 下拉選單的變更
-        private void train_change(object sender, EventArgs e)
+        private async void train_change(object sender, EventArgs e)
         {
-            train_set(sender, e);
-            label7.Text = $"列車已選擇\r\n時間 : {DateTime.Now.ToString("T")}";
-        }
-        public void train_set(object sender, EventArgs e)
-        {
-            textBox2.Text = $"{trains[comboBox1.SelectedIndex].speed}km/hr";
             comboBox4.Text = trains[comboBox1.SelectedIndex].destination.name;
-            comboBox3.Text = trains[comboBox1.SelectedIndex].priority.ToString();
-            label7.Text = $"{trains[comboBox1.SelectedIndex].stats}\r\n時間:{ DateTime.Now.ToString("T")}";
+            comboBox3.SelectedIndex = trains[comboBox1.SelectedIndex].priority;
+            train_set();
+            await FocusMethod();
         }
-        private void station_change(object sender, EventArgs e)
+        public void train_set()
         {
-            label11.Text = "";
+            textBox2.Text = $"{trains[comboBox1.SelectedIndex].speed} km/hr";
+            label7.Text = $"{trains[comboBox1.SelectedIndex].stats}\r\n時間：{ DateTime.Now.ToString("T")}";
+        }
+        private void dgv_set()
+        {
             dgv.Rows.Clear();
             foreach (Train train in trains)
             {
-                if (train.stats != "" && train.cur_st == stations[comboBox2.SelectedIndex]) label11.Text = $"{train.name}{train.stats}";
+                if (train.stats != "" && train.cur_st == stations[comboBox2.SelectedIndex])
+                {
+                    label11.Text = $"{train.name} 車次{train.stats}\r\n時間：{DateTime.Now.ToString("T")}";
+                }
                 double total_length = 0;
                 int wait = 0;
                 if (train.cur_st.isStation() && ((Station)train.cur_st).name == comboBox2.Text)
@@ -297,7 +325,10 @@ namespace 簡易的行控中心
                     {
                         if (((Station)cur).name == comboBox2.Text)
                         {
-                            dgv.Rows.Add(train.name, train.getTime(total_length, wait), train.destination.name, train.stats);
+                            if(((Station)cur).priority <= train.priority)
+                            {
+                                dgv.Rows.Add(train.name, train.getTime(total_length, wait), train.destination.name, train.stats);
+                            }
                             break;
                         }
                         else if (((Station)cur).name == train.destination.name)
@@ -315,39 +346,89 @@ namespace 簡易的行控中心
                 }
             }
         }
-
-        private void prioritization_change(object sender, EventArgs e)
+        private async void station_change(object sender, EventArgs e)
         {
-            if(comboBox1.SelectedIndex != -1)
-            {
-                if(trains[comboBox1.SelectedIndex].priority != comboBox3.SelectedIndex + 1)
-                {
-                    label7.Text = $"列車優先權已更改\r\n{trains[comboBox1.SelectedIndex].priority}->{comboBox3.SelectedIndex + 1}\r\n時間 : {DateTime.Now.ToString("T")}";
-                }
-                trains[comboBox1.SelectedIndex].priority = comboBox3.SelectedIndex + 1;                
-            }
+            label11.Text = "";
+            comboBox7.SelectedIndex = stations[comboBox2.SelectedIndex].priority;
+            labels1.ForEach(x => x.ForeColor = Color.AliceBlue);
+            labels1[comboBox2.SelectedIndex].ForeColor = Color.Aqua;
+            dgv_set();
+            await FocusMethod();
         }
-        private void destination_change(object sender, EventArgs e)
+        private async void station_prioritization_change(object sender, EventArgs e)
         {
+            if (comboBox2.SelectedIndex != -1 && comboBox7.SelectedIndex != -1)
+            {
+                if (stations[comboBox2.SelectedIndex].priority != comboBox7.SelectedIndex)
+                {
+                    label11.Text = $"車站優先權已更改 {tmp[stations[comboBox2.SelectedIndex].priority]}➡️{tmp[comboBox7.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    stations[comboBox2.SelectedIndex].priority = comboBox7.SelectedIndex;
+                    dgv_set();
+                }
+            }
+            else
+            {
+                comboBox7.SelectedIndex = -1;
+            }
+            await FocusMethod();
+        }
+        private async void prioritization_change(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex != -1 && comboBox3.SelectedIndex != -1)
+            {
+                if(trains[comboBox1.SelectedIndex].priority != comboBox3.SelectedIndex)
+                {
+                    label7.Text = $"列車優先權已更改\r\n{tmp[trains[comboBox1.SelectedIndex].priority]}➡️{tmp[comboBox3.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    trains[comboBox1.SelectedIndex].priority = comboBox3.SelectedIndex;
+                    if (comboBox2.SelectedIndex != -1)
+                    {
+                        dgv_set();
+                    }
+                }
+            }
+            else
+            {
+                comboBox3.SelectedIndex = -1;
+            }
+            await FocusMethod();
+        }
+        private async void destination_change(object sender, EventArgs e)
+        {
+            await FocusMethod();
+            if (comboBox1.SelectedIndex == -1)
+            {
+                comboBox4.SelectedIndex = -1;
+                return;
+            }
             if (trains[comboBox1.SelectedIndex].destination.name != comboBox4.Text)
             {
                 if (!trains[comboBox1.SelectedIndex].cur_st.isStation())
                 {
-                    MessageBox.Show("列車正在行駛中，請先進站臨停");
+                    MessageBox.Show("列車正在行駛中，請先進站臨停","提示");
+                    comboBox4.Text = trains[comboBox1.SelectedIndex].destination.name;
                     return;
                 }
-                label7.Text = $"列車目的地已更改\r\n{trains[comboBox1.SelectedIndex].destination.name}->{comboBox4.Text}\r\n時間 : {DateTime.Now.ToString("T")}";
+                if (trains[comboBox1.SelectedIndex].cur_st.isStation() && ((Station)trains[comboBox1.SelectedIndex].cur_st).name == comboBox4.Text)
+                {
+                    trains[comboBox1.SelectedIndex].stats = $"已到達終點站";
+                }
+                label7.Text = $"列車目的地已更改\r\n{trains[comboBox1.SelectedIndex].destination.name}➡️{comboBox4.Text}\r\n時間 : {DateTime.Now.ToString("T")}";
                 trains[comboBox1.SelectedIndex].destination = stations[stations.FindIndex(x => x.name == comboBox4.Text)];
                 trains[comboBox1.SelectedIndex].next_bool = TrainInfo.get_next((Station)trains[comboBox1.SelectedIndex].cur_st, trains[comboBox1.SelectedIndex].destination);
-                if (comboBox2.SelectedIndex != -1) station_change(sender, e);
+                if (comboBox2.SelectedIndex != -1) dgv_set();
             }
         }
-        private void incident_change(object sender, EventArgs e)
+        private async void incident_change(object sender, EventArgs e)
         {
             for (int i = 0; i < 6; i++)
             {
                 checks[i].Checked = is_check[comboBox5.SelectedIndex, i];
             }
+            await FocusMethod();
+        }
+        private async void place_change(object sender, EventArgs e)
+        {
+            await FocusMethod();
         }
         #endregion
         #region 列車的操作功能
@@ -369,7 +450,7 @@ namespace 簡易的行控中心
                 if (trains[comboBox1.SelectedIndex].cur_st.isStation()) return;
                 if (trains[comboBox1.SelectedIndex].speed > 10) trains[comboBox1.SelectedIndex].speed -= 10;
                 else trains[comboBox1.SelectedIndex].speed = 0;
-                train_set(sender, e);
+                train_set();
                 label7.Text = $"列車已減速\r\n時間 : {DateTime.Now.ToString("T")}";
             }
         }
@@ -383,7 +464,7 @@ namespace 簡易的行控中心
                 while (trains[comboBox1.SelectedIndex].speed != 0)
                 {
                     trains[comboBox1.SelectedIndex].speed -= 10;
-                    train_set(sender, e);
+                    train_set();
                     Thread.Sleep(1000);
                     Application.DoEvents();
                 }
@@ -409,7 +490,7 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region 緊急處理
+        #region 事件處理
         private void button7_Click(object sender, EventArgs e)
         {
             if (comboBox5.SelectedIndex != -1 && comboBox6.SelectedIndex != -1)
@@ -422,6 +503,68 @@ namespace 簡易的行控中心
                 MessageBox.Show($"事件：{comboBox5.Text}\r\n\r\n列車：{comboBox6.Text}\r\n\r\n已聯絡：{typeBuilder.ToString().TrimEnd('、')}\r\n\r\n" +
                     $"詳細內容：\r\n{(richTextBox1.Text == "" ? "None" : richTextBox1.Text)}", "緊急處理", MessageBoxButtons.OK);
             }
+        }
+        #endregion
+        #region 拖曳視窗
+        private static bool isDragging;
+        private static Point offset;
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = true;
+                offset = e.Location;
+            }
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = false;
+            }
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                Point newLocation = this.PointToScreen(e.Location);
+                this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
+            }
+        }
+        #endregion
+        #region 路線地圖事件
+        private void Label_Click(object sender,EventArgs args)
+        {
+            Label clickedLabel = sender as Label;
+            if (clickedLabel != null)
+            {
+                comboBox2.SelectedIndex = labels1.IndexOf(clickedLabel);
+            }
+        }
+        private void Label_MouseMove(object sender,EventArgs args)
+        {
+            Label label = sender as Label;
+            if (label != null)
+            {
+                label.Font= new Font("微软雅黑", 12, FontStyle.Bold);
+            }
+        }
+        private void Label_MouseLeave(object sender,EventArgs args)
+        {
+            Label leftLabel = sender as Label;
+            if (leftLabel != null)
+            {
+                leftLabel.Font = new Font("微软雅黑", 12);
+            }
+        }
+        #endregion
+        #region ComboBox的焦點變更
+        private async Task FocusMethod()
+        {
+            await Task.Delay(200);
+            label1.Focus();
         }
         #endregion
     }
@@ -509,7 +652,7 @@ namespace 簡易的行控中心
             next_bool = b;
             wait = 0;
             speed = 0;
-            stats = $"停靠{((Station)cur_st).name}中";
+            stats = $"停靠 {((Station)cur_st).name} 中";
         }
         public string getTime(double total_length,int count)
         {

@@ -146,7 +146,6 @@ namespace 簡易的行控中心
             timer2.Start();
             label17.Text = "正在模擬";
             label17.ForeColor = Color.LightGreen;
-            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = true;
         }
         private async void button2_Click(object sender, EventArgs e)
         {
@@ -218,7 +217,8 @@ namespace 簡易的行控中心
                             if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
                             {
                                 button3.Enabled = button4.Enabled = false;
-                                button6.Enabled = true;
+                                button5.Enabled = button6.Enabled = true;
+                                button5.Text = "啟動";
                             }
                             if (train.wait >= 0 && ++train.wait >= 10 && (train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2) != null)
                             {
@@ -231,11 +231,7 @@ namespace 簡易的行控中心
                     }
                     else
                     {
-                        if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
-                        {
-                            button3.Enabled = button4.Enabled = true;
-                            button6.Enabled = false;
-                        }
+                        bool fg = false;
                         if (train.wait == -1 && train.speed < 110)
                         {
                             double start_u = train.speed / 3.6;// 速度 m/s
@@ -243,6 +239,7 @@ namespace 簡易的行控中心
                             start_u = start_u + start_a * delta_t;
                             train.speed = start_u * 3.6 > 110.0 ? 110.0 : start_u * 3.6;
                             if (train.speed == 110) train.wait = 0;
+                            fg = true;                       
                         }
                         else
                         {
@@ -266,10 +263,7 @@ namespace 簡易的行控中心
                             }
                             else if (train.length >= ((Track)train.cur_st).length && train.speed <= 4)
                             {
-                                if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
-                                {
-                                    button3.Enabled = button4.Enabled = button5.Enabled = true;
-                                }
+                                fg = true;
                                 train.change_image("pen");
                                 train.length = 0;
                                 train.speed = 0;
@@ -277,10 +271,7 @@ namespace 簡易的行控中心
                             }
                             else
                             {
-                                if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
-                                {
-                                    button3.Enabled = button4.Enabled = button5.Enabled = false;
-                                }
+                                fg = true;                               
                                 train.change_image("penO");
                                 end_u = end_u + (-end_a) * delta_t;
                                 train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
@@ -291,6 +282,19 @@ namespace 簡易的行控中心
                         {
                             train.change_image("penR");
                             throw new SpeedException($"速度過快，請減速!");
+                        }
+                        if(comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
+                        {
+                            if (fg)
+                            {
+                                button3.Enabled = button4.Enabled = button6.Enabled = false;
+                                button5.Enabled = true;
+                                button5.Text = "煞車";
+                            }
+                            else
+                            {
+                                button3.Enabled = button4.Enabled = true;
+                            }
                         }
                         foreach (var other_train in trains)
                         {
@@ -318,6 +322,7 @@ namespace 簡易的行控中心
         private async void train_change(object sender, EventArgs e)
         {
             label7.Text = "";
+            button5.Text = trains[comboBox1.SelectedIndex].speed != 0 ? "煞車" : "啟動";
             button6.Text = trains[comboBox1.SelectedIndex].cur_st.isStation() ? "停靠站" : "發車";
             comboBox4.SelectedIndex = comboBox4.FindStringExact(trains[comboBox1.SelectedIndex].destination.name);
             comboBox3.SelectedIndex = trains[comboBox1.SelectedIndex].priority;
@@ -478,6 +483,7 @@ namespace 簡易的行控中心
                 await faster(sender, e, train);
                 train.wait = -1;
                 label7.Text = $"列車已加速\r\n時間 : {DateTime.Now.ToString("T")}";
+                button3.Enabled = true;
             }
         }
         private async Task faster(object sender, EventArgs e,Train train)
@@ -515,7 +521,6 @@ namespace 簡易的行控中心
             finally
             {
                cancellationTokenSource = null;
-               button3.Enabled = true;
             }
         }
         private async void button4_Click(object sender, EventArgs e)
@@ -528,8 +533,8 @@ namespace 簡易的行控中心
                 button4.Enabled = false;
                 await slower(sender, e, train);
                 train_set();
-                train.wait = -1;
                 label7.Text = $"列車已減速\r\n時間 : {DateTime.Now.ToString("T")}";
+                button4.Enabled = true;
             }
         }
         private async Task slower(object sender,EventArgs e,Train train)
@@ -566,7 +571,6 @@ namespace 簡易的行控中心
             finally
             {
                 cancellationTokenSource = null;
-                button4.Enabled = true;
             }
         }
         private async void button5_Click(object sender, EventArgs e)

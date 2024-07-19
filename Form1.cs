@@ -70,10 +70,11 @@ namespace 簡易的行控中心
             {
                 stations[i].set_connect(tracks[i], tracks[i + 1]);
             }
-            trains.Add(new Train("3104", 1, stations[0], stations[6], TrainInfo.get_next(stations[0], stations[6])));
-            trains.Add(new Train("3211", 2, stations[6], stations[0], TrainInfo.get_next(stations[6], stations[0])));
-            trains.Add(new Train("3518", 2, stations[3], stations[0], TrainInfo.get_next(stations[3], stations[0])));
-            trains.Add(new Train("3704", 2, stations[5], stations[3], TrainInfo.get_next(stations[5], stations[3])));
+            trains.Add(new Train("3104", 1, stations[0], stations[6]));
+            trains.Add(new Train("3211", 2, stations[6], stations[0]));
+            trains.Add(new Train("3288", 2, stations[6], stations[5]));
+            trains.Add(new Train("3518", 2, stations[3], stations[0]));
+            trains.Add(new Train("3704", 2, stations[5], stations[3]));
             comboBox1.Items.AddRange(trains.Select(x => x.name).ToArray());
             comboBox2.Items.AddRange(stations.Select(x => x.name).ToArray());
             comboBox4.Items.AddRange(stations.Select(x => x.name).ToArray());
@@ -108,6 +109,8 @@ namespace 簡易的行控中心
                 "調整時速請按「增速」和「減速」分別和進出站加速度相同，增減速不超過 ±10km/h\r\n" +
                 "「煞車」煞車加速度為 - 2.5 m/s² 用於急煞\r\n「啟動」不等候直接出站或中途停止要開始行駛\r\n" +
                 "「發車」等候發車\r\n「停靠站」在此站不發車，需要先停靠在車站\r\n車站優先序如果低於列車則不會臨停\r\n\r\n" +
+                "[1] 同方向列車不會在車站同時發車，考慮安全問題\r\n"+
+                "[2] 如果要進站的月台數不足則不會發車，需等待已在進站月台的列車離站\r\n[3] 一個月台有各一個北上和南下\r\n\r\n" +
                 "3. 路線地圖\r\n點選車站名可直接更改列車站狀態的車站名\r\n黑色箭頭：無列車在此行駛\r\n橘色箭頭：有列車要進站或離站\r\n藍色箭頭：有列車站在此行駛\r\n紅色箭頭：有安全問題\r\n\r\n" +
                 "4. 事件處理\r\n選擇事件及列車，勾選聯絡單位，詳細內容可為空\r\n模擬事件回報功能\r\n\r\n" +
                 $"© 2024 陳國翔\r\n\r\nhttps://github.com/ChenGuoXiang940/NTCUST_OCC_myproject\r\n\r\n功能介绍 - 版本 {version.ToString()}", "功能簡介", MessageBoxButtons.OK);
@@ -141,44 +144,50 @@ namespace 簡易的行控中心
         }
         #endregion
         #region 開啟/暫停
-        private void button1_Click(object sender, EventArgs e)
+        private async void button1_Click(object sender, EventArgs e)
         {
-            timer2.Start();
-            label17.Text = "正在模擬";
-            label17.ForeColor = Color.LightGreen;
-        }
-        private async void button2_Click(object sender, EventArgs e)
-        {
-            timer2.Stop();
-            label17.Text = "暫停模擬";
-            label17.ForeColor = Color.Red;
-            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
-            try
+            if (button1.Text == "開始")
             {
-                if (fg)
-                {
-                    fg = false;
-                    if (sqlconnection.State == ConnectionState.Closed)
-                    {
-                        await sqlconnection.OpenAsync();
-                    }
-                    using (Form2 f2 = new Form2())
-                    {
-                        f2.Focus();
-                        f2.DataInputCompleted += Form2_DataInputCompleted;
-                        DialogResult result = f2.ShowDialog();
-                        if (result == DialogResult.OK)
-                        {
-                            //Nothing...
-                        }
-                        f2.Dispose();
-                    }
-                    sqlconnection.Close();
-                }
+                button1.Text = "暫停";
+                timer2.Start();
+                button7.Enabled = true;
+                label17.Text = "正在模擬";
+                label17.ForeColor = Color.LightGreen;
             }
-            catch (TaskCanceledException)
+            else
             {
-                //Nothing...
+                button1.Text = "開始";
+                timer2.Stop();
+                label17.Text = "暫停模擬";
+                label17.ForeColor = Color.Red;
+                button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
+                try
+                {
+                    if (fg)
+                    {
+                        fg = false;
+                        if (sqlconnection.State == ConnectionState.Closed)
+                        {
+                            await sqlconnection.OpenAsync();
+                        }
+                        using (Form2 f2 = new Form2())
+                        {
+                            f2.Focus();
+                            f2.DataInputCompleted += Form2_DataInputCompleted;
+                            DialogResult result = f2.ShowDialog();
+                            if (result == DialogResult.OK)
+                            {
+                                //Nothing...
+                            }
+                            f2.Dispose();
+                        }
+                        sqlconnection.Close();
+                    }
+                }
+                catch (TaskCanceledException)
+                {
+                    //Nothing...
+                }
             }
         }
         private void Form2_DataInputCompleted(object sender, EventArgs e)
@@ -214,6 +223,30 @@ namespace 簡易的行控中心
                         else
                         {
                             train.stats = "等待出站";
+                            Track next_track = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
+                            Station next_station = train.next_bool ? next_track.station1 : next_track.station2;
+                            int rd = 0; // 紀錄列車開往的站有多少列車數量
+                            bool check = false; // 紀錄同方向列車是否在車站同時發車
+                            foreach(Train other_train in trains)
+                            {
+                                if (train == other_train) continue;
+                                if (train.next_bool == other_train.next_bool)
+                                {
+                                    if (next_track == other_train.cur_st || next_station == other_train.cur_st)
+                                    {
+                                        rd++;
+                                    }
+                                    else if (train.cur_st == other_train.cur_st && trains.IndexOf(train) > trains.IndexOf(other_train))
+                                    {
+                                        check = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (rd > next_station.platform || check)
+                            {
+                                break;
+                            }
                             if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
                             {
                                 button3.Enabled = button4.Enabled = false;
@@ -294,17 +327,6 @@ namespace 簡易的行控中心
                             else
                             {
                                 button3.Enabled = button4.Enabled = true;
-                            }
-                        }
-                        foreach (var other_train in trains)
-                        {
-                            if (train != other_train)
-                            {
-                                if (!other_train.cur_st.isStation() && train.cur_st == other_train.cur_st && train.next_bool == other_train.next_bool && Math.Abs(other_train.length - train.length) < 0.5)
-                                {
-                                    train.change_image("penR");
-                                    throw new NearException($"和 {other_train.name} 的距離過近，請減速!");
-                                }
                             }
                         }
                     }
@@ -856,14 +878,14 @@ namespace 簡易的行控中心
         // 列車的時速(km/hr)
         public double speed { get; set; }
         public string stats { get; set; }
-        public Train(string n, int p, Station st, Station end, bool b)
+        public Train(string n, int p, Station st, Station end)
         {
             name = n;
             priority = p;
             start = st;
             cur_st = st;
             destination = end;
-            next_bool = b;
+            next_bool = TrainInfo.get_next(st, end);
             wait = 0;
             speed = 0;
             stats = $"停靠 {((Station)cur_st).name} 中";
@@ -897,27 +919,6 @@ namespace 簡易的行控中心
     public class SpeedException : Exception
     {
         public SpeedException(string message) : base(message)
-        {
-        }
-    }
-    // 列車距離過近
-    public class NearException : Exception
-    {
-        public NearException(string message) : base(message)
-        {
-        }
-    }
-    // 月台已滿
-    public class FullException : Exception
-    {
-        public FullException(string message) : base(message)
-        {
-        }
-    }
-    // 列車事故
-    public class AccidentException : Exception
-    {
-        public AccidentException(string message) : base(message)
         {
         }
     }

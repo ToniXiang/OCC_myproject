@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -27,9 +28,9 @@ namespace 簡易的行控中心
             this.StartPosition = FormStartPosition.CenterScreen;
             checks = new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4 };
             texts = new string[] { "問題報告", "功能建議", "使用體驗", "" };
-            foreach(Control control in this.Controls)
+            foreach (Control control in this.Controls)
             {
-                if (control is TextBox || control is Label || control is RichTextBox)
+                if (control is TextBox || control is System.Windows.Forms.Label || control is RichTextBox)
                 {
                     control.MouseDown += Form2_MouseDown;
                     control.MouseUp += Form2_MouseUp;
@@ -37,7 +38,6 @@ namespace 簡易的行控中心
                 }
             }
         }
-
         private void button1_Click(object sender, EventArgs e)
         {
             try
@@ -97,7 +97,7 @@ namespace 簡易的行控中心
                 textBox3.Visible = false;
             }
         }
-
+        #region 拖曳視窗
         private void Form2_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button == MouseButtons.Left)
@@ -123,11 +123,6 @@ namespace 簡易的行控中心
                 this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
             }
         }
-    }
-    class FormatException : Exception
-    {
-        public FormatException(string message) : base(message)
-        {
-        }
+        #endregion
     }
 }

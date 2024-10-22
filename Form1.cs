@@ -11,13 +11,12 @@ using System.Threading;
 using System.Media;
 using System.Data.SqlClient;
 using System.IO;
-
+using System.Reflection;
 namespace 簡易的行控中心
 {
     public partial class Form1 : Form
     {
         #region 宣告
-        public static string projectDirectory;
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
         private static SqlConnection sqlconnection = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True");
@@ -26,7 +25,7 @@ namespace 簡易的行控中心
         private static CheckBox[] checks;
         private static bool[,] is_check =
         {
-            { true, true, true, true, true, true },
+            { true , true, true, true, true, true },
             { false, false, false, true, false, true },
             { false, true, false, true, false, true },
             { false, false, false, false, true, false },
@@ -35,25 +34,40 @@ namespace 簡易的行控中心
         private static List<Label> labels1 = new List<Label>();
         private static List<string> tmp = new List<string>() { "高", "中", "低" };
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private static Version version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         private static double delta_t = 1.0;
+        public static PictureBox[] pic1, pic2;
         public Form1()
         {
             InitializeComponent();
-            this.DoubleBuffered = true;
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            projectDirectory = Directory.GetParent(baseDirectory).Parent.Parent.FullName;
-            this.StartPosition = FormStartPosition.CenterScreen;
-            Bitmap b = new Bitmap(projectDirectory + "\\programming.png");
-            this.Icon = Icon.FromHandle(b.GetHicon());
+            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
+            pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
+            pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
+            DrawImg.DoImg(projectDirectory);
+            this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(projectDirectory, "programming.png"))).GetHicon());
+            foreach (Control control in this.Controls)
+            {
+                if (control is TextBox || control is Label || control is GroupBox)
+                {
+                    control.MouseDown += Form1_MouseDown;
+                    control.MouseUp += Form1_MouseUp;
+                    control.MouseMove += Form1_MouseMove;
+                    if (control is GroupBox)
+                    {
+                        foreach (Control control1 in control.Controls.OfType<ComboBox>())
+                        {
+                            ((ComboBox)control1).DrawMode = DrawMode.OwnerDrawFixed;
+                            ((ComboBox)control1).DrawItem += DrawItem;
+                        }
+                    }
+                }
+            }
+            labels1.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
             timer1.Start();
             TrainInfo.info = stationNames;
             int[] limitSpeeds = { 135, 135, 130, 125, 140, 150 };
-            int[] lengths = { 2, 4, 4, 2, 2, 1 };//13, 20, 15, 20, 17, 30 
+            int[] lengths = { 2, 4, 4, 2, 2, 1 };
             int[] platform = { 2, 1, 1, 1, 1, 1, 2 };
             int[] prio = { 0, 1, 1, 1, 2, 2, 0 };
-            PictureBox[] pic1 = { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
-            PictureBox[] pic2 = { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
             labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
             for (int i = 0; i < 7; i++)
             {
@@ -82,38 +96,60 @@ namespace 簡易的行控中心
             tmp.ForEach(x => comboBox7.Items.Add(x));
             List<string> tmp1 = new List<string>() { "車次", "時間", "開往", "狀態" };
             tmp1.ForEach(x => dgv.Columns.Add(x, x));
-            dgv.DefaultCellStyle.ForeColor = Color.Black;
             dgv.Columns.Cast<DataGridViewColumn>().ToList().ForEach(x => x.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells);
-            dgv.DefaultCellStyle.Font = new Font("微軟正黑體", 12);
-            label17.Text = "暫停模擬";
-            label17.ForeColor = Color.Red;
-            button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
-            label11.Text = label7.Text = "";
             string[] tmp2 = { "列車事故", "突發健康事件", "恐怖襲擊", "能源故障", "乘客滯留" };
             comboBox5.Items.AddRange(tmp2);
             checks = new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
             comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
-            foreach (Control control in this.Controls)
+        }
+        #endregion
+        #region 自訂 Combobox
+        private void DrawItem(object sender, DrawItemEventArgs e)
+        {
+            if (e.Index < 0) return;
+            ComboBox comboBox = sender as ComboBox;
+            string text = comboBox.Items[e.Index].ToString();
+            e.DrawBackground();
+            using (Brush brush = new SolidBrush(e.ForeColor))
             {
-                if (control is TextBox || control is Label || control is GroupBox)
-                {
-                    control.MouseDown += Form1_MouseDown;
-                    control.MouseUp += Form1_MouseUp;
-                    control.MouseMove += Form1_MouseMove;
-                }
+                // 計算文字的寬度和高度
+                SizeF textSize = e.Graphics.MeasureString(text, e.Font);
+                // 計算文字的起始位置，使其置中
+                float textX = (e.Bounds.Width - textSize.Width) / 2;
+                float textY = (e.Bounds.Height - textSize.Height) / 2;
+                // 繪製文字
+                e.Graphics.DrawString(text, e.Font, brush, e.Bounds.X + textX, e.Bounds.Y + textY);
             }
-            labels1.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
-            MessageBox.Show("簡易的行控中心(Simple operational control center)\r\n\r\n" +
-                "1. 車站狀態\r\n請選擇車站名稱，可以調整優先序\r\n時刻表包含將進站的列車名、預估抵達時間、起始站、終點站\r\n\r\n" +
-                "2. 列車狀態及操作\r\n請選擇列車名稱，可以調整優先序、更改終點站，但先臨停\r\n列車出站加速度為 1.0 m/s²，維持且不超過 110km/h\r\n列車進站加速度為 - 0.8 m/s²\r\n" +
-                "調整時速請按「增速」和「減速」分別和進出站加速度相同，增減速不超過 ±10km/h\r\n" +
-                "「煞車」煞車加速度為 - 2.5 m/s² 用於急煞\r\n「啟動」不等候直接出站或中途停止要開始行駛\r\n" +
-                "「發車」等候發車\r\n「停靠站」在此站不發車，需要先停靠在車站\r\n車站優先序如果低於列車則不會臨停\r\n\r\n" +
-                "[1] 同方向列車不會在車站同時發車，考慮安全問題\r\n"+
-                "[2] 如果要進站的月台數不足則不會發車，需等待已在進站月台的列車離站\r\n[3] 一個月台有各一個北上和南下\r\n\r\n" +
-                "3. 路線地圖\r\n點選車站名可直接更改列車站狀態的車站名\r\n黑色箭頭：無列車在此行駛\r\n橘色箭頭：有列車要進站或離站\r\n藍色箭頭：有列車站在此行駛\r\n紅色箭頭：有安全問題\r\n\r\n" +
-                "4. 事件處理\r\n選擇事件及列車，勾選聯絡單位，詳細內容可為空\r\n模擬事件回報功能\r\n\r\n" +
-                $"© 2024 陳國翔\r\n\r\nhttps://github.com/ChenGuoXiang940/NTCUST_OCC_myproject\r\n\r\n功能介绍 - 版本 {version.ToString()}", "功能簡介", MessageBoxButtons.OK);
+            e.DrawFocusRectangle();
+        }
+        #endregion
+        #region 拖曳視窗
+        private static bool isDragging;
+        private static Point offset;
+        private void Form1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = true;
+                offset = e.Location;
+            }
+        }
+
+        private void Form1_MouseUp(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Left)
+            {
+                isDragging = false;
+            }
+        }
+
+        private void Form1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (isDragging)
+            {
+                Point newLocation = this.PointToScreen(e.Location);
+                this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
+            }
         }
         #endregion
         #region 離開
@@ -139,7 +175,7 @@ namespace 簡易的行控中心
             MessageBox.Show("簡易的行控中心(Simple operational control center)\r\n\r\n1. 使用者可以自行操作列車" +
                 "\r\n2. 時刻掌握當前時間\r\n3. 使用模擬計算來預估列車的當前狀態\r\n5. 路線地圖可視化展示\r\n6. 緊急事件處理\r\n" +
                 "7. 用戶回饋連結資料庫\r\n8. 更多功能日後開發(維護和檢修計劃、能源管理連接資料庫)\r\n\r\n" +
-                $"© 2024 陳國翔\r\n\r\nhttps://github.com/ChenGuoXiang940/NTCUST_OCC_myproject\r\n\r\n功能介绍 - 版本 {version.ToString()}", "簡介", MessageBoxButtons.OK);
+                $"© 2024 陳國翔\r\n\r\nhttps://chenguoxiang940.github.io/project.html\r\n\r\n功能介绍 - 版本 {Assembly.GetExecutingAssembly().GetName().Version.ToString()}", "簡介", MessageBoxButtons.OK);
             await FocusMethod();
         }
         #endregion
@@ -257,7 +293,7 @@ namespace 簡易的行控中心
                             {
                                 train.cur_st = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
                                 train.wait = -1;
-                                train.change_image("penO");
+                                train.change_image("O");
                                 train.stats = "正在行駛中";
                             }
                         }
@@ -276,7 +312,7 @@ namespace 簡易的行控中心
                         }
                         else
                         {
-                            train.change_image("penB");
+                            train.change_image("B");
                         }
                         train.move();
                         double end_u = train.speed / 3.6;// 速度 m/s
@@ -288,16 +324,16 @@ namespace 簡易的行控中心
                             {
                                 if (train.length >= ((Track)train.cur_st).length)
                                 {
-                                    train.change_image("pen");
+                                    train.change_image("");
                                     train.length = 0;
                                     train.cur_st = train.next_bool ? (((Track)train.cur_st).station1).track1 : (((Track)train.cur_st).station2).track2;
-                                    train.change_image("penB");
+                                    train.change_image("B");
                                 }
                             }
                             else if (train.length >= ((Track)train.cur_st).length && train.speed <= 4)
                             {
                                 fg = true;
-                                train.change_image("pen");
+                                train.change_image("");
                                 train.length = 0;
                                 train.speed = 0;
                                 train.cur_st = train.next_bool ? ((Track)train.cur_st).station1 : ((Track)train.cur_st).station2;
@@ -305,7 +341,7 @@ namespace 簡易的行控中心
                             else
                             {
                                 fg = true;                               
-                                train.change_image("penO");
+                                train.change_image("O");
                                 end_u = end_u + (-end_a) * delta_t;
                                 train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
                                 train.stats = "正在進站中";
@@ -313,7 +349,7 @@ namespace 簡易的行控中心
                         }
                         else if (train.speed > ((Track)train.cur_st).limitspeed)
                         {
-                            train.change_image("penR");
+                            train.change_image("R");
                             throw new SpeedException($"速度過快，請減速!");
                         }
                         if(comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
@@ -641,7 +677,7 @@ namespace 簡易的行控中心
                     u = u + a * delta_t;
                     train.speed = u < 0 ? 0 : u * 3.6;
                     train_change(sender, e);
-                    train.change_image("penB");
+                    train.change_image("B");
                     train_set();
                     await Task.Delay(1000);
                 } while (train.speed > 0);
@@ -666,7 +702,7 @@ namespace 簡易的行控中心
             if ((train.wait >= 0 || train.wait == -2) && (train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2) != null)
             {
                 train.cur_st = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
-                train.change_image("penO");
+                train.change_image("O");
                 train.stats = "正在行駛中";
             }
             train.wait = 0;
@@ -694,7 +730,7 @@ namespace 簡易的行控中心
                     u = u + a * delta_t;
                     trains[comboBox1.SelectedIndex].speed = u * 3.6 > 110.0 ? 110.0 : u * 3.6;
                     train_change(sender, e);
-                    train.change_image("penB");
+                    train.change_image("B");
                     train_set();
                     await Task.Delay(1000);
                 } while (train.speed != 110);
@@ -741,35 +777,6 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region 拖曳視窗
-        private static bool isDragging;
-        private static Point offset;
-        private void Form1_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = true;
-                offset = e.Location;
-            }
-        }
-
-        private void Form1_MouseUp(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = false;
-            }
-        }
-
-        private void Form1_MouseMove(object sender, MouseEventArgs e)
-        {
-            if (isDragging)
-            {
-                Point newLocation = this.PointToScreen(e.Location);
-                this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
-            }
-        }
-        #endregion
         #region 路線地圖事件
         private void Label_Click(object sender,EventArgs args)
         {
@@ -804,123 +811,4 @@ namespace 簡易的行控中心
         }
         #endregion
     }
-    #region 類別
-    public interface TrafficNode
-    {
-        bool isStation();
-    }
-    public class Track:TrafficNode
-    {
-        // 交通節點的限速(km/hr)
-        public int limitspeed { get; set; }
-        // 交通節點的長度(km)
-        public double length { get; set; }
-        public Station station1 { get; set; }
-        public Station station2 { get; set; }
-        public PictureBox picture1 { get; set; }
-        public PictureBox picture2 { get; set; }
-        public Track(int ls, int len, Station st1,Station st2, PictureBox p1,PictureBox p2)
-        {
-            limitspeed = ls;
-            length = len;
-            station1 = st1;
-            station2 = st2;
-            picture1 = p1;
-            picture2 = p2;
-        }
-        public bool isStation() => false;
-    }
-    public class Station : TrafficNode
-    {
-        // 車站名稱
-        public string name { get; set; }
-        // 列車優先權大於車站 => 不停站
-        public int priority { get; set; }
-        // 是否有車站在月台
-        public int platform { get; set; }
-        // 南下的軌道
-        public Track track1 { get; set; }
-        // 北上的軌道
-        public Track track2 { get; set; }
-        public Label label { get; set; }
-        public void set_connect(Track t1,Track t2)
-        {
-            track1 = t1;
-            track2 = t2;
-        }
-        public Station(string n, int pf, int p, Label l)
-        {
-            name = n;
-            platform = pf;
-            priority = p;
-            label = l;
-        }
-        public bool isStation() => true;
-    }
-    public class Train
-    {
-        // 列車的名稱
-        public string name { get; set; }
-        // 在此鐵路已經行駛的距離
-        public double length { get; set; }
-        // 列車的優先權(1：表示最高權)
-        public int priority { get; set; }
-        // 列車的起始車站
-        public Station start { get; set; }
-        // 列車開出的車站或是正在停靠的車站名
-        public TrafficNode cur_st { get; set; }
-        // 列車開往的目的地
-        public Station destination { get; set; }
-        // 判斷北上還是南下列車
-        public bool next_bool { get; set; }
-        // 列車在車站的正在等待時間(約10秒)
-        public int wait { get; set; }
-        // 列車的時速(km/hr)
-        public double speed { get; set; }
-        public string stats { get; set; }
-        public Train(string n, int p, Station st, Station end)
-        {
-            name = n;
-            priority = p;
-            start = st;
-            cur_st = st;
-            destination = end;
-            next_bool = TrainInfo.get_next(st, end);
-            wait = 0;
-            speed = 0;
-            stats = $"停靠 {((Station)cur_st).name} 中";
-        }
-        public string getTime(double total_length,int count)
-        {
-            // 正常時速 110km/hr 行駛，停靠每個月台約10秒
-            int sec = (int)((total_length - length) / 110 * 3600) + count;
-            if (sec <= 0) return "即將進站中";
-            return $"約{sec / 60}分{sec % 60}秒進站";
-        }
-        public void move() => length += (speed == 0 ? 0 : speed / 3600);
-        public void change_image(string path)
-        {
-            if (cur_st == null || cur_st.isStation()) return;
-            if (!next_bool) ((Track)cur_st).picture1.Image = new Bitmap(Form1.projectDirectory + "\\umtodm" + path + ".png");
-            else ((Track)cur_st).picture2.Image = new Bitmap(Form1.projectDirectory + "\\dmtoum" + path + ".png");
-        }
-    }
-    public class TrainInfo
-    {
-        public static string[] info;
-        public static bool get_next(Station cur_st, Station end)
-        {
-            return Array.IndexOf(info, cur_st.name) > Array.IndexOf(info, end.name);
-        }
-    }
-    #endregion
-    #region 錯誤類別
-    // 列車速度過快
-    public class SpeedException : Exception
-    {
-        public SpeedException(string message) : base(message)
-        {
-        }
-    }
-    #endregion
 }

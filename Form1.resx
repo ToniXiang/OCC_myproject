@@ -411,15 +411,6 @@
   <data name="&gt;&gt;groupBox1.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <data name="pictureBox13.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="pictureBox13.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 649</value>
   </data>
@@ -446,15 +437,6 @@
   </data>
   <data name="&gt;&gt;pictureBox13.ZOrder" xml:space="preserve">
     <value>0</value>
-  </data>
-  <data name="pictureBox12.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="pictureBox12.Location" type="System.Drawing.Point, System.Drawing">
     <value>40, 538</value>
@@ -483,15 +465,6 @@
   <data name="&gt;&gt;pictureBox12.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="pictureBox11.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="pictureBox11.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 422</value>
   </data>
@@ -518,15 +491,6 @@
   </data>
   <data name="&gt;&gt;pictureBox11.ZOrder" xml:space="preserve">
     <value>2</value>
-  </data>
-  <data name="pictureBox10.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="pictureBox10.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 321</value>
@@ -555,15 +519,6 @@
   <data name="&gt;&gt;pictureBox10.ZOrder" xml:space="preserve">
     <value>3</value>
   </data>
-  <data name="pictureBox9.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
-  </data>
   <data name="pictureBox9.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 212</value>
   </data>
@@ -590,15 +545,6 @@
   </data>
   <data name="&gt;&gt;pictureBox9.ZOrder" xml:space="preserve">
     <value>4</value>
-  </data>
-  <data name="pictureBox8.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAAL5JREFUaEPt
-        z0EKg0AUBFHvf+lJJhCQT2XRWLoILTwX5QjTx1rrVu9nvz7mNxNGU4eEMJo6JITR1CEhjKYOCWE0dUgI
-        o6lDQhhNHRLCaOqQEEZTh4QwmjokhNHUISGMpg4JYTR1SAijqUNCGE0dEsJo6pAQRlOHhDCaOiSE0dQh
-        IYymDglhvOp8+V/mP1dhvGpeeprnDRgN8/Jn86wBo2Fe/mues2C0zBHbPGPBaHlqxIbR9HdDZrdhtN0/
-        ZB0vx/ThmqCB0nIAAAAASUVORK5CYII=
-</value>
   </data>
   <data name="pictureBox8.Location" type="System.Drawing.Point, System.Drawing">
     <value>42, 93</value>
@@ -627,15 +573,6 @@
   <data name="&gt;&gt;pictureBox8.ZOrder" xml:space="preserve">
     <value>5</value>
   </data>
-  <data name="pictureBox7.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="pictureBox7.Location" type="System.Drawing.Point, System.Drawing">
     <value>132, 649</value>
   </data>
@@ -662,15 +599,6 @@
   </data>
   <data name="&gt;&gt;pictureBox7.ZOrder" xml:space="preserve">
     <value>6</value>
-  </data>
-  <data name="pictureBox6.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="pictureBox6.Location" type="System.Drawing.Point, System.Drawing">
     <value>132, 538</value>
@@ -699,15 +627,6 @@
   <data name="&gt;&gt;pictureBox6.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
-  <data name="pictureBox5.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="pictureBox5.Location" type="System.Drawing.Point, System.Drawing">
     <value>128, 422</value>
   </data>
@@ -735,14 +654,8 @@
   <data name="&gt;&gt;pictureBox5.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
-  <data name="pictureBox4.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
+  <data name="pictureBox4.ErrorImage" type="System.Resources.ResXNullRef, System.Windows.Forms">
+    <value />
   </data>
   <data name="pictureBox4.Location" type="System.Drawing.Point, System.Drawing">
     <value>128, 321</value>
@@ -921,15 +834,6 @@
   <data name="&gt;&gt;label12.ZOrder" xml:space="preserve">
     <value>14</value>
   </data>
-  <data name="pictureBox2.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
-  </data>
   <data name="pictureBox2.Location" type="System.Drawing.Point, System.Drawing">
     <value>128, 212</value>
   </data>
@@ -956,15 +860,6 @@
   </data>
   <data name="&gt;&gt;pictureBox2.ZOrder" xml:space="preserve">
     <value>15</value>
-  </data>
-  <data name="pictureBox1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
-    <value>
-        iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAABGdBTUEAALGPC/xhBQAAALNJREFUaEPt
-        zzEKgEAQBEH//+lTA0GWTgbb5BihEMYN7GOttQUcbddzvfibBUfTHbFVyN8xOFreEVuF3OaNBUfDDHjM
-        OwuOhhnwNm8NOH41f3ya9wYcTX8HPHA0NSSEo6khIRxNDQnhaGpICEdTQ0I4mhoSwtHUkBCOpoaEcDQ1
-        JISjqSEhHE0NCeFoakgIR1NDQjiaGhLC0dSQEI6mhoRwNDUkhKOpISEcTQ0J4WhqSGQdJ4pM84gh4uv/
-        AAAAAElFTkSuQmCC
-</value>
   </data>
   <data name="pictureBox1.Location" type="System.Drawing.Point, System.Drawing">
     <value>132, 93</value>
@@ -1200,6 +1095,9 @@
   <data name="textBox3.TabIndex" type="System.Int32, mscorlib">
     <value>19</value>
   </data>
+  <data name="textBox3.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
+  </data>
   <data name="&gt;&gt;textBox3.Name" xml:space="preserve">
     <value>textBox3</value>
   </data>
@@ -1249,7 +1147,7 @@
     <value>512, 47</value>
   </data>
   <data name="comboBox7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 39</value>
+    <value>126, 40</value>
   </data>
   <data name="comboBox7.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
@@ -1303,13 +1201,10 @@
     <value>23, 113</value>
   </data>
   <data name="label11.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 31</value>
+    <value>0, 31</value>
   </data>
   <data name="label11.TabIndex" type="System.Int32, mscorlib">
     <value>15</value>
-  </data>
-  <data name="label11.Text" xml:space="preserve">
-    <value>stats</value>
   </data>
   <data name="&gt;&gt;label11.Name" xml:space="preserve">
     <value>label11</value>
@@ -1330,7 +1225,7 @@
     <value>150, 50</value>
   </data>
   <data name="comboBox2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>233, 39</value>
+    <value>233, 40</value>
   </data>
   <data name="comboBox2.TabIndex" type="System.Int32, mscorlib">
     <value>11</value>
@@ -1608,6 +1503,9 @@
   <data name="&gt;&gt;groupBox3.ZOrder" xml:space="preserve">
     <value>4</value>
   </data>
+  <data name="button6.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="button6.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -1645,7 +1543,7 @@
     <value>150, 220</value>
   </data>
   <data name="comboBox4.Size" type="System.Drawing.Size, System.Drawing">
-    <value>229, 39</value>
+    <value>229, 40</value>
   </data>
   <data name="comboBox4.TabIndex" type="System.Int32, mscorlib">
     <value>17</value>
@@ -1669,13 +1567,10 @@
     <value>34, 292</value>
   </data>
   <data name="label7.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 31</value>
+    <value>0, 31</value>
   </data>
   <data name="label7.TabIndex" type="System.Int32, mscorlib">
     <value>16</value>
-  </data>
-  <data name="label7.Text" xml:space="preserve">
-    <value>stats</value>
   </data>
   <data name="&gt;&gt;label7.Name" xml:space="preserve">
     <value>label7</value>
@@ -1696,7 +1591,7 @@
     <value>512, 68</value>
   </data>
   <data name="comboBox3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>126, 39</value>
+    <value>126, 40</value>
   </data>
   <data name="comboBox3.TabIndex" type="System.Int32, mscorlib">
     <value>15</value>
@@ -1747,7 +1642,7 @@
     <value>150, 68</value>
   </data>
   <data name="comboBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>229, 39</value>
+    <value>229, 40</value>
   </data>
   <data name="comboBox1.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -1818,6 +1713,9 @@
   <data name="&gt;&gt;label5.ZOrder" xml:space="preserve">
     <value>7</value>
   </data>
+  <data name="button5.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="button5.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -1845,6 +1743,9 @@
   <data name="&gt;&gt;button5.ZOrder" xml:space="preserve">
     <value>8</value>
   </data>
+  <data name="button4.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="button4.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -1871,6 +1772,9 @@
   </data>
   <data name="&gt;&gt;button4.ZOrder" xml:space="preserve">
     <value>9</value>
+  </data>
+  <data name="button3.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
   </data>
   <data name="button3.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
@@ -1907,6 +1811,9 @@
   </data>
   <data name="textBox2.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
+  </data>
+  <data name="textBox2.TextAlign" type="System.Windows.Forms.HorizontalAlignment, System.Windows.Forms">
+    <value>Center</value>
   </data>
   <data name="&gt;&gt;textBox2.Name" xml:space="preserve">
     <value>textBox2</value>
@@ -1957,13 +1864,13 @@
     <value>870, 875</value>
   </data>
   <data name="label17.Size" type="System.Drawing.Size, System.Drawing">
-    <value>67, 31</value>
+    <value>110, 31</value>
   </data>
   <data name="label17.TabIndex" type="System.Int32, mscorlib">
     <value>28</value>
   </data>
   <data name="label17.Text" xml:space="preserve">
-    <value>stats</value>
+    <value>暫停模擬</value>
   </data>
   <data name="&gt;&gt;label17.Name" xml:space="preserve">
     <value>label17</value>
@@ -2492,6 +2399,9 @@
   <data name="&gt;&gt;groupBox4.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="button7.Enabled" type="System.Boolean, mscorlib">
+    <value>False</value>
+  </data>
   <data name="button7.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
@@ -2562,7 +2472,7 @@
     <value>115, 118</value>
   </data>
   <data name="comboBox6.Size" type="System.Drawing.Size, System.Drawing">
-    <value>273, 39</value>
+    <value>273, 40</value>
   </data>
   <data name="comboBox6.TabIndex" type="System.Int32, mscorlib">
     <value>14</value>
@@ -2610,7 +2520,7 @@
     <value>115, 50</value>
   </data>
   <data name="comboBox5.Size" type="System.Drawing.Size, System.Drawing">
-    <value>273, 39</value>
+    <value>273, 40</value>
   </data>
   <data name="comboBox5.TabIndex" type="System.Int32, mscorlib">
     <value>12</value>
@@ -2899,6 +2809,9 @@
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
     <value>1387, 1032</value>
+  </data>
+  <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
+    <value>CenterScreen</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Form1</value>

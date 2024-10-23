@@ -20,8 +20,6 @@ namespace 簡易的行控中心
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
         private static SqlConnection sqlconnection = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True");
-        private static string[] stationNames = { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
-        private static bool fg = true;
         private static CheckBox[] checks;
         private static bool[,] is_check =
         {
@@ -42,36 +40,38 @@ namespace 簡易的行控中心
             string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
             pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
+            labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
             DrawImg.DoImg(projectDirectory);
             this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(projectDirectory, "programming.png"))).GetHicon());
-            foreach (Control control in this.Controls)
+            foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
             {
-                if (control is TextBox || control is Label || control is GroupBox)
+                control.MouseDown += Form1_MouseDown;
+                control.MouseUp += Form1_MouseUp;
+                control.MouseMove += Form1_MouseMove;
+                if (control is GroupBox groupBox)
                 {
-                    control.MouseDown += Form1_MouseDown;
-                    control.MouseUp += Form1_MouseUp;
-                    control.MouseMove += Form1_MouseMove;
-                    if (control is GroupBox)
+                    foreach (var comboBox in groupBox.Controls.OfType<ComboBox>())
                     {
-                        foreach (Control control1 in control.Controls.OfType<ComboBox>())
-                        {
-                            ((ComboBox)control1).DrawMode = DrawMode.OwnerDrawFixed;
-                            ((ComboBox)control1).DrawItem += DrawItem;
-                        }
+                        comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+                        comboBox.DrawItem += DrawItem;
+                    }
+                    foreach(var label in groupBox.Controls.OfType<Label>())
+                    {
+                        label.MouseDown += Form1_MouseDown;
+                        label.MouseUp += Form1_MouseUp;
+                        label.MouseMove += Form1_MouseMove;
                     }
                 }
             }
             labels1.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
-            timer1.Start();
-            TrainInfo.info = stationNames;
+            TrainInfo.info = new string[] { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
             int[] limitSpeeds = { 135, 135, 130, 125, 140, 150 };
             int[] lengths = { 2, 4, 4, 2, 2, 1 };
             int[] platform = { 2, 1, 1, 1, 1, 1, 2 };
             int[] prio = { 0, 1, 1, 1, 2, 2, 0 };
-            labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
             for (int i = 0; i < 7; i++)
             {
-                stations.Add(new Station(stationNames[i], platform[i], prio[i], labels1[i]));
+                stations.Add(new Station(TrainInfo.info[i], platform[i], prio[i], labels1[i]));
             }
             List<Track> tracks = new List<Track>();
             tracks.Add(null);
@@ -101,6 +101,7 @@ namespace 簡易的行控中心
             comboBox5.Items.AddRange(tmp2);
             checks = new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
             comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
+            timer1.Start();
         }
         #endregion
         #region 自訂 Combobox
@@ -153,12 +154,36 @@ namespace 簡易的行控中心
         }
         #endregion
         #region 離開
-        private void pictureBox3_Click(object sender, EventArgs e)
+        private async void pictureBox3_Click(object sender, EventArgs e)
         {
-            DialogResult result= MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
-            if (result == DialogResult.Yes)
+            try
             {
-                Application.Exit();
+                DialogResult result = new DialogResult();
+                if (sqlconnection.State == ConnectionState.Closed)
+                {
+                    await sqlconnection.OpenAsync();
+                }
+                using (Form2 f2 = new Form2())
+                {
+                    f2.Focus();
+                    f2.DataInputCompleted += Form2_DataInputCompleted;
+                    result = f2.ShowDialog();
+                    if (result == DialogResult.OK)
+                    {
+                        //Nothing...
+                    }
+                    f2.Dispose();
+                }
+                sqlconnection.Close();
+                result = MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
+                {
+                    Application.Exit();
+                }
+            }
+            catch (TaskCanceledException)
+            {
+                //Nothing...
             }
         }
         #endregion
@@ -180,7 +205,7 @@ namespace 簡易的行控中心
         }
         #endregion
         #region 開啟/暫停
-        private async void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e)
         {
             if (button1.Text == "開始")
             {
@@ -197,33 +222,6 @@ namespace 簡易的行控中心
                 label17.Text = "暫停模擬";
                 label17.ForeColor = Color.Red;
                 button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
-                try
-                {
-                    if (fg)
-                    {
-                        fg = false;
-                        if (sqlconnection.State == ConnectionState.Closed)
-                        {
-                            await sqlconnection.OpenAsync();
-                        }
-                        using (Form2 f2 = new Form2())
-                        {
-                            f2.Focus();
-                            f2.DataInputCompleted += Form2_DataInputCompleted;
-                            DialogResult result = f2.ShowDialog();
-                            if (result == DialogResult.OK)
-                            {
-                                //Nothing...
-                            }
-                            f2.Dispose();
-                        }
-                        sqlconnection.Close();
-                    }
-                }
-                catch (TaskCanceledException)
-                {
-                    //Nothing...
-                }
             }
         }
         private void Form2_DataInputCompleted(object sender, EventArgs e)
@@ -767,12 +765,8 @@ namespace 簡易的行控中心
         {
             if (comboBox5.SelectedIndex != -1 && comboBox6.SelectedIndex != -1)
             {
-                var typeBuilder = new StringBuilder();
-                for(int i = 0; i < 6; i++)
-                {
-                    if (checks[i].Checked) typeBuilder.Append(checks[i].Text + "、");
-                }
-                MessageBox.Show($"事件：{comboBox5.Text}\r\n\r\n列車：{comboBox6.Text}\r\n\r\n已聯絡：{typeBuilder.ToString().TrimEnd('、')}\r\n\r\n" +
+                MessageBox.Show($"事件：{comboBox5.Text}\r\n\r\n列車：{comboBox6.Text}\r\n\r\n已聯絡：" +
+                    $"{string.Join("、", checks.Where(x => x.Checked).Select(x => x.Text))}\r\n\r\n" +
                     $"詳細內容：\r\n{(richTextBox1.Text == "" ? "None" : richTextBox1.Text)}", "緊急處理", MessageBoxButtons.OK);
             }
         }

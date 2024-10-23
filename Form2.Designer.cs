@@ -41,7 +41,6 @@
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.checkBox5 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.label5 = new System.Windows.Forms.Label();
@@ -144,9 +143,9 @@
             this.checkBox4.Font = new System.Drawing.Font("微软雅黑", 12F);
             this.checkBox4.Location = new System.Drawing.Point(172, 188);
             this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new System.Drawing.Size(232, 35);
+            this.checkBox4.Size = new System.Drawing.Size(88, 35);
             this.checkBox4.TabIndex = 30;
-            this.checkBox4.Text = "其他（請說明）：";
+            this.checkBox4.Text = "其他";
             this.checkBox4.UseVisualStyleBackColor = true;
             this.checkBox4.CheckedChanged += new System.EventHandler(this.checkBox4_CheckedChanged);
             // 
@@ -180,25 +179,17 @@
             this.richTextBox1.TabIndex = 33;
             this.richTextBox1.Text = "";
             // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.label4.Location = new System.Drawing.Point(32, 389);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(446, 31);
-            this.label4.TabIndex = 34;
-            this.label4.Text = "是否願意參與進一步討論或測試新功能？";
-            // 
             // checkBox5
             // 
             this.checkBox5.AutoSize = true;
             this.checkBox5.Font = new System.Drawing.Font("微软雅黑", 12F);
-            this.checkBox5.Location = new System.Drawing.Point(473, 395);
+            this.checkBox5.Location = new System.Drawing.Point(38, 395);
             this.checkBox5.Name = "checkBox5";
-            this.checkBox5.Size = new System.Drawing.Size(22, 21);
+            this.checkBox5.Size = new System.Drawing.Size(472, 35);
             this.checkBox5.TabIndex = 35;
+            this.checkBox5.Text = "是否願意參與進一步討論或測試新功能？";
             this.checkBox5.UseVisualStyleBackColor = true;
+            this.checkBox5.CheckedChanged += new System.EventHandler(this.checkBox5_CheckedChanged);
             // 
             // button1
             // 
@@ -223,6 +214,7 @@
             this.label5.Size = new System.Drawing.Size(254, 31);
             this.label5.TabIndex = 37;
             this.label5.Text = "感謝您的參與和貢獻！";
+            this.label5.Visible = false;
             // 
             // Form2
             // 
@@ -233,7 +225,6 @@
             this.Controls.Add(this.label5);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.checkBox5);
-            this.Controls.Add(this.label4);
             this.Controls.Add(this.richTextBox1);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox3);
@@ -250,6 +241,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.HelpButton = true;
             this.Name = "Form2";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Form2";
             this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Form2_MouseMove);
@@ -274,7 +266,6 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.Label label4;
         private System.Windows.Forms.CheckBox checkBox5;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Label label5;

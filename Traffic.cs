@@ -126,11 +126,4 @@ namespace 簡易的行控中心
 
         }
     }
-    class FormatException : Exception
-    {
-        public FormatException(string message) : base(message)
-        {
-
-        }
-    }
 }

@@ -8,11 +8,7 @@ namespace 簡易的行控中心
 {
     public partial class Form2 : Form
     {
-        public event EventHandler DataInputCompleted;
-        public static string email;
-        public static string type;
-        public static string content;
-        public static bool isOK;
+        public event EventHandler<DICEventArgs> DataInputCompleted;
         private static CheckBox[] checks;
         public Form2()
         {
@@ -29,10 +25,13 @@ namespace 簡易的行控中心
         {
             try
             {
+                DICEventArgs args = new DICEventArgs();
                 string[] texts = new string[] { "問題報告", "功能建議", "使用體驗", textBox3.Text };
-                type = string.Join("、", checks.Select((check, index) => new { check, text = texts[index] }).Where(x => x.check.Checked).Select(x => x.text));
-                string[] errorMessages = new string[] {"電子郵件為空","其他類型名字超過 6 或已選但為空", "內容為空，字長需在 50 以內", "請選擇任何一個回饋類型" };
-                string[] stringBox = new string[] { textBox2.Text, textBox3.Text, richTextBox1.Text, type };
+                args.type = string.Join("、", checks.Select((check, index) => new { check, text = texts[index] })
+                    .Where(x => x.check.Checked).Select(x => x.text));
+                string[] errorMessages = new string[] {"電子郵件為空","其他類型名字超過 6 或已選但為空",
+                    "內容為空，字長需在 50 以內", "請選擇任何一個回饋類型" };
+                string[] stringBox = new string[] { textBox2.Text, textBox3.Text, richTextBox1.Text, args.type };
                 Func<string, bool>[] conditions = new Func<string, bool>[]
                 {
                     tb => string.IsNullOrWhiteSpace(tb),
@@ -40,18 +39,14 @@ namespace 簡易的行控中心
                     tb => string.IsNullOrWhiteSpace(tb) || tb.Length > 50,
                     tb => tb == ""
                 };
-                for (int i = 0; i < stringBox.Length; i++)
-                {
-                    if (conditions[i](stringBox[i]))
-                    {
-                        throw new FormatException(errorMessages[i]);
-                    }
-                }
-                email = textBox2.Text;
-                content =  richTextBox1.Text;
-                isOK = checkBox5.Checked;
+                var errors = stringBox.Select((value, index) => new { value, condition = conditions[index], errorMessage
+                    = errorMessages[index] }).Where(x => x.condition(x.value)).Select(x => x.errorMessage).ToList();
+                if (errors.Any()) throw new FormatException(errors.First());
+                args.email = textBox2.Text;
+                args.content =  richTextBox1.Text;
+                args.isOK = checkBox5.Checked;
                 this.Close();
-                DataInputCompleted?.Invoke(this, EventArgs.Empty);
+                DataInputCompleted?.Invoke(this, args);
             }
             catch (Exception ex)
             {
@@ -73,39 +68,38 @@ namespace 簡易的行控中心
         {
             label5.Visible = checkBox5.Checked;
         }
-        class FormatException : Exception
+        public class DICEventArgs : EventArgs
+        {
+            public string email;
+            public string type;
+            public string content;
+            public bool isOK;
+        }
+        private class FormatException : Exception
         {
             public FormatException(string message) : base(message)
             {
 
             }
         }
-        #region 拖曳視窗
         private static bool isDragging;
         private static Point offset;
         private void Form2_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = true;
-                offset = e.Location;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            isDragging = true;
+            offset = e.Location;
         }
         private void Form2_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = false;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            isDragging = false;
         }
         private void Form2_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging)
-            {
-                Point newLocation = this.PointToScreen(e.Location);
-                this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
-            }
+            if (!isDragging) return;
+            Point newLocation = this.PointToScreen(e.Location);
+            this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
         }
-        #endregion
     }
 }

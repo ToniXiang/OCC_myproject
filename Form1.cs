@@ -12,27 +12,19 @@ using System.Media;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
+using static 簡易的行控中心.Form2;
 namespace 簡易的行控中心
 {
     public partial class Form1 : Form
     {
-        #region 宣告
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
         private static SqlConnection sqlconnection = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True");
         private static CheckBox[] checks;
-        private static bool[,] is_check =
-        {
-            { true , true, true, true, true, true },
-            { false, false, false, true, false, true },
-            { false, true, false, true, false, true },
-            { false, false, false, false, true, false },
-            { false, false, false, false, false, true }
-        };
         private static List<Label> labels1 = new List<Label>();
-        private static List<string> tmp = new List<string>() { "高", "中", "低" };
+        private static readonly List<string> tmp = new List<string>() { "高", "中", "低" };
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private static double delta_t = 1.0;
+        private static readonly double delta_t = 1.0;
         public static PictureBox[] pic1, pic2;
         public Form1()
         {
@@ -41,7 +33,7 @@ namespace 簡易的行控中心
             pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
             labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
-            DrawImg.DoImg(projectDirectory);
+            DrawReadImg.DoImg(projectDirectory);
             this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(projectDirectory, "programming.png"))).GetHicon());
             foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
             {
@@ -103,28 +95,23 @@ namespace 簡易的行控中心
             comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
             timer1.Start();
         }
-        #endregion
         #region 自訂 Combobox
         private void DrawItem(object sender, DrawItemEventArgs e)
         {
             if (e.Index < 0) return;
-            ComboBox comboBox = sender as ComboBox;
-            string text = comboBox.Items[e.Index].ToString();
+            string text = (sender as ComboBox).Items[e.Index].ToString();
             e.DrawBackground();
             using (Brush brush = new SolidBrush(e.ForeColor))
             {
-                // 計算文字的寬度和高度
                 SizeF textSize = e.Graphics.MeasureString(text, e.Font);
-                // 計算文字的起始位置，使其置中
                 float textX = (e.Bounds.Width - textSize.Width) / 2;
                 float textY = (e.Bounds.Height - textSize.Height) / 2;
-                // 繪製文字
                 e.Graphics.DrawString(text, e.Font, brush, e.Bounds.X + textX, e.Bounds.Y + textY);
             }
             e.DrawFocusRectangle();
         }
         #endregion
-        #region 拖曳視窗
+        #region 可拖曳 Form1 視窗
         private static bool isDragging;
         private static Point offset;
         private void Form1_MouseDown(object sender, MouseEventArgs e)
@@ -153,7 +140,7 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region 離開
+        #region 用戶回饋傳給資料庫 & 離開
         private async void pictureBox3_Click(object sender, EventArgs e)
         {
             try
@@ -184,6 +171,19 @@ namespace 簡易的行控中心
             catch (TaskCanceledException)
             {
                 //Nothing...
+            }
+        }
+
+        private void Form2_DataInputCompleted(object sender, DICEventArgs e)
+        {
+            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sqlconnection))
+            {
+                cmd.Parameters.AddWithValue("@email", e.email);
+                cmd.Parameters.AddWithValue("@type", e.type);
+                cmd.Parameters.AddWithValue("@content", e.content);
+                cmd.Parameters.AddWithValue("@isok", e.isOK);
+                cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));
+                cmd.ExecuteNonQuery();
             }
         }
         #endregion
@@ -222,18 +222,6 @@ namespace 簡易的行控中心
                 label17.Text = "暫停模擬";
                 label17.ForeColor = Color.Red;
                 button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
-            }
-        }
-        private void Form2_DataInputCompleted(object sender, EventArgs e)
-        {
-            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sqlconnection))
-            {
-                cmd.Parameters.AddWithValue("@email", Form2.email);
-                cmd.Parameters.AddWithValue("@type", Form2.type);
-                cmd.Parameters.AddWithValue("@content", Form2.content);
-                cmd.Parameters.AddWithValue("@isok", Form2.isOK);
-                cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));
-                cmd.ExecuteNonQuery();
             }
         }
         #endregion
@@ -514,6 +502,14 @@ namespace 簡易的行控中心
                 if (comboBox2.SelectedIndex != -1) dgv_set();
             }
         }
+        private static bool[,] is_check =
+        {
+            { true , true, true, true, true, true },
+            { false, false, false, true, false, true },
+            { false, true, false, true, false, true },
+            { false, false, false, false, true, false },
+            { false, false, false, false, false, true }
+        };
         private async void incident_change(object sender, EventArgs e)
         {
             for (int i = 0; i < 6; i++)
@@ -760,7 +756,7 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region 事件處理
+        #region 送出事件處理
         private void button7_Click(object sender, EventArgs e)
         {
             if (comboBox5.SelectedIndex != -1 && comboBox6.SelectedIndex != -1)
@@ -771,7 +767,7 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region 路線地圖事件
+        #region 自訂 Label 站名事件 (路線地圖)
         private void Label_Click(object sender,EventArgs args)
         {
             Label clickedLabel = sender as Label;
@@ -797,7 +793,7 @@ namespace 簡易的行控中心
             }
         }
         #endregion
-        #region ComboBox的焦點變更
+        #region ComboBox 的焦點變更
         private async Task FocusMethod()
         {
             await Task.Delay(200);

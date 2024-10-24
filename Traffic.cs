@@ -107,8 +107,8 @@ namespace 簡易的行控中心
         public void change_image(string color)
         {
             if (cur_st == null || cur_st.isStation()) return;
-            if (!next_bool) ((Track)cur_st).picture1.Image = new Bitmap(Traffic.projectDirectory + $"\\scr\\utod{color}.jpg");
-            else ((Track)cur_st).picture2.Image = new Bitmap(Traffic.projectDirectory + $"\\scr\\dtou{color}.jpg");
+            if (!next_bool) ((Track)cur_st).picture1.Image = new Bitmap(Path.Combine(Traffic.projectDirectory, $"scr\\utod{color}.jpg"));
+            else ((Track)cur_st).picture2.Image = new Bitmap(Path.Combine(Traffic.projectDirectory, $"scr\\dtou{color}.jpg"));
         }
     }
     public class TrainInfo

@@ -5,29 +5,25 @@ using System.IO;
 
 namespace 簡易的行控中心
 {
-    internal class DrawImg
+    internal class DrawReadImg
     {
         public static void DoImg(string filepath)
         {
-            List<Pen> pens = new List<Pen>() { new Pen(Color.Black, 2), new Pen(Color.Blue, 2), new Pen(Color.Orange, 2), new Pen(Color.Red, 2) };
+            List<Color> colors = new List<Color>() { Color.Black, Color.Blue, Color.Orange, Color.Red };
             List<string> str = new List<string>() { "", "B", "O", "R" };
             List<string> head = new List<string>() { "utod", "dtou" };
             string scrFolderPath = Path.Combine(filepath, "scr");
-            if (!Directory.Exists(scrFolderPath))
-            {
-                Directory.CreateDirectory(scrFolderPath);
-            }
+            if (!Directory.Exists(scrFolderPath)) Directory.CreateDirectory(scrFolderPath);
             for (int i = 0; i < 2; i++)
             {
                 for (int j = 0; j < str.Count; j++)
                 {
-                    if (File.Exists(Path.Combine(scrFolderPath, head[i] + str[j] + ".jpg")))
+                    if (File.Exists(Path.Combine(scrFolderPath, head[i] + str[j] + ".jpg"))) continue;
+                    using(Bitmap bitmap = new Bitmap(50, 50))
                     {
-                        continue;
+                        DrawArrow(bitmap, new Pen(colors[j], 2), head[i]);
+                        bitmap.Save(Path.Combine(scrFolderPath, head[i] + str[j] + ".jpg"));
                     }
-                    Bitmap bitmap = new Bitmap(50, 50);
-                    DrawArrow(bitmap, pens[j], head[i]);
-                    bitmap.Save(Path.Combine(scrFolderPath, head[i] + str[j] + ".jpg"));
                 }
             }
             for (int i = 0; i < 6; ++i)
@@ -38,12 +34,12 @@ namespace 簡易的行控中心
             // 儲存在資料夾 scr 內，每張照片為透明背景 50 x 50 Jpg
             // 已經有相同的"檔案名"則不覆蓋
         }
+        private static readonly AdjustableArrowCap arrowCap = new AdjustableArrowCap(5, 5);
         private static Bitmap DrawArrow(Bitmap bitmap, Pen pen, string direction)
         {
             using (Graphics g = Graphics.FromImage(bitmap))
             {
                 g.Clear(Color.Transparent);
-                AdjustableArrowCap arrowCap = new AdjustableArrowCap(5, 5);
                 pen.CustomEndCap = arrowCap;
                 if (direction == "utod")
                 {

@@ -363,7 +363,6 @@ MigrationBackup/
 FodyWeavers.xsd
 
 # 照片
-.jpg
 /scr/dtou.jpg
 /scr/dtouB.jpg
 /scr/dtouO.jpg

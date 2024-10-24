@@ -64,6 +64,10 @@
             this.label9 = new System.Windows.Forms.Label();
             this.label8 = new System.Windows.Forms.Label();
             this.dgv = new System.Windows.Forms.DataGridView();
+            this.車次 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.時間 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.開往 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.狀態 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.button6 = new System.Windows.Forms.Button();
             this.comboBox4 = new System.Windows.Forms.ComboBox();
@@ -305,6 +309,10 @@
             this.comboBox7.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.comboBox7, "comboBox7");
             this.comboBox7.FormattingEnabled = true;
+            this.comboBox7.Items.AddRange(new object[] {
+            resources.GetString("comboBox7.Items"),
+            resources.GetString("comboBox7.Items1"),
+            resources.GetString("comboBox7.Items2")});
             this.comboBox7.Name = "comboBox7";
             this.comboBox7.SelectedIndexChanged += new System.EventHandler(this.station_prioritization_change);
             // 
@@ -325,6 +333,14 @@
             this.comboBox2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.comboBox2, "comboBox2");
             this.comboBox2.FormattingEnabled = true;
+            this.comboBox2.Items.AddRange(new object[] {
+            resources.GetString("comboBox2.Items"),
+            resources.GetString("comboBox2.Items1"),
+            resources.GetString("comboBox2.Items2"),
+            resources.GetString("comboBox2.Items3"),
+            resources.GetString("comboBox2.Items4"),
+            resources.GetString("comboBox2.Items5"),
+            resources.GetString("comboBox2.Items6")});
             this.comboBox2.Name = "comboBox2";
             this.comboBox2.SelectedIndexChanged += new System.EventHandler(this.station_change);
             // 
@@ -348,8 +364,8 @@
             dataGridViewCellStyle1.SelectionBackColor = System.Drawing.SystemColors.Highlight;
             dataGridViewCellStyle1.SelectionForeColor = System.Drawing.Color.Black;
             this.dgv.AlternatingRowsDefaultCellStyle = dataGridViewCellStyle1;
-            this.dgv.BackgroundColor = System.Drawing.Color.AliceBlue;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
+            this.dgv.BackgroundColor = System.Drawing.Color.Gray;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
             dataGridViewCellStyle2.BackColor = System.Drawing.Color.AliceBlue;
             dataGridViewCellStyle2.Font = new System.Drawing.Font("小賴字體 SC", 12F, System.Drawing.FontStyle.Bold);
             dataGridViewCellStyle2.ForeColor = System.Drawing.Color.Black;
@@ -358,6 +374,11 @@
             dataGridViewCellStyle2.WrapMode = System.Windows.Forms.DataGridViewTriState.True;
             this.dgv.ColumnHeadersDefaultCellStyle = dataGridViewCellStyle2;
             this.dgv.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dgv.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.車次,
+            this.時間,
+            this.開往,
+            this.狀態});
             dataGridViewCellStyle3.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleLeft;
             dataGridViewCellStyle3.BackColor = System.Drawing.Color.AliceBlue;
             dataGridViewCellStyle3.Font = new System.Drawing.Font("小賴字體 SC", 12F, System.Drawing.FontStyle.Bold);
@@ -371,6 +392,30 @@
             this.dgv.Name = "dgv";
             this.dgv.ReadOnly = true;
             this.dgv.RowTemplate.Height = 31;
+            // 
+            // 車次
+            // 
+            resources.ApplyResources(this.車次, "車次");
+            this.車次.Name = "車次";
+            this.車次.ReadOnly = true;
+            // 
+            // 時間
+            // 
+            resources.ApplyResources(this.時間, "時間");
+            this.時間.Name = "時間";
+            this.時間.ReadOnly = true;
+            // 
+            // 開往
+            // 
+            resources.ApplyResources(this.開往, "開往");
+            this.開往.Name = "開往";
+            this.開往.ReadOnly = true;
+            // 
+            // 狀態
+            // 
+            resources.ApplyResources(this.狀態, "狀態");
+            this.狀態.Name = "狀態";
+            this.狀態.ReadOnly = true;
             // 
             // groupBox3
             // 
@@ -406,6 +451,14 @@
             this.comboBox4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.comboBox4, "comboBox4");
             this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Items.AddRange(new object[] {
+            resources.GetString("comboBox4.Items"),
+            resources.GetString("comboBox4.Items1"),
+            resources.GetString("comboBox4.Items2"),
+            resources.GetString("comboBox4.Items3"),
+            resources.GetString("comboBox4.Items4"),
+            resources.GetString("comboBox4.Items5"),
+            resources.GetString("comboBox4.Items6")});
             this.comboBox4.Name = "comboBox4";
             this.comboBox4.SelectedIndexChanged += new System.EventHandler(this.destination_change);
             // 
@@ -420,6 +473,10 @@
             this.comboBox3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.comboBox3, "comboBox3");
             this.comboBox3.FormattingEnabled = true;
+            this.comboBox3.Items.AddRange(new object[] {
+            resources.GetString("comboBox3.Items"),
+            resources.GetString("comboBox3.Items1"),
+            resources.GetString("comboBox3.Items2")});
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.SelectedIndexChanged += new System.EventHandler(this.prioritization_change);
             // 
@@ -577,6 +634,12 @@
             this.comboBox5.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             resources.ApplyResources(this.comboBox5, "comboBox5");
             this.comboBox5.FormattingEnabled = true;
+            this.comboBox5.Items.AddRange(new object[] {
+            resources.GetString("comboBox5.Items"),
+            resources.GetString("comboBox5.Items1"),
+            resources.GetString("comboBox5.Items2"),
+            resources.GetString("comboBox5.Items3"),
+            resources.GetString("comboBox5.Items4")});
             this.comboBox5.Name = "comboBox5";
             this.comboBox5.SelectedIndexChanged += new System.EventHandler(this.incident_change);
             // 
@@ -743,6 +806,10 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Label label23;
         private System.Windows.Forms.Button button6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 車次;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 時間;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 開往;
+        private System.Windows.Forms.DataGridViewTextBoxColumn 狀態;
     }
 }
 

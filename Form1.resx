@@ -780,6 +780,15 @@
   <data name="comboBox7.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="comboBox7.Items" xml:space="preserve">
+    <value>低</value>
+  </data>
+  <data name="comboBox7.Items1" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="comboBox7.Items2" xml:space="preserve">
+    <value>高</value>
+  </data>
   <data name="comboBox7.Location" type="System.Drawing.Point, System.Drawing">
     <value>512, 47</value>
   </data>
@@ -858,6 +867,27 @@
   <data name="comboBox2.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="comboBox2.Items" xml:space="preserve">
+    <value>台北</value>
+  </data>
+  <data name="comboBox2.Items1" xml:space="preserve">
+    <value>新北</value>
+  </data>
+  <data name="comboBox2.Items2" xml:space="preserve">
+    <value>桃園</value>
+  </data>
+  <data name="comboBox2.Items3" xml:space="preserve">
+    <value>新竹</value>
+  </data>
+  <data name="comboBox2.Items4" xml:space="preserve">
+    <value>苗栗</value>
+  </data>
+  <data name="comboBox2.Items5" xml:space="preserve">
+    <value>台中</value>
+  </data>
+  <data name="comboBox2.Items6" xml:space="preserve">
+    <value>彰化</value>
+  </data>
   <data name="comboBox2.Location" type="System.Drawing.Point, System.Drawing">
     <value>150, 50</value>
   </data>
@@ -932,6 +962,54 @@
   </data>
   <data name="&gt;&gt;label8.ZOrder" xml:space="preserve">
     <value>7</value>
+  </data>
+  <metadata name="車次.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="車次.HeaderText" xml:space="preserve">
+    <value>車次</value>
+  </data>
+  <data name="車次.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="車次.Width" type="System.Int32, mscorlib">
+    <value>150</value>
+  </data>
+  <metadata name="時間.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="時間.HeaderText" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="時間.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="時間.Width" type="System.Int32, mscorlib">
+    <value>150</value>
+  </data>
+  <metadata name="開往.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="開往.HeaderText" xml:space="preserve">
+    <value>開往</value>
+  </data>
+  <data name="開往.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="開往.Width" type="System.Int32, mscorlib">
+    <value>150</value>
+  </data>
+  <metadata name="狀態.UserAddedColumn" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+    <value>True</value>
+  </metadata>
+  <data name="狀態.HeaderText" xml:space="preserve">
+    <value>狀態</value>
+  </data>
+  <data name="狀態.MinimumWidth" type="System.Int32, mscorlib">
+    <value>8</value>
+  </data>
+  <data name="狀態.Width" type="System.Int32, mscorlib">
+    <value>150</value>
   </data>
   <data name="dgv.Location" type="System.Drawing.Point, System.Drawing">
     <value>16, 212</value>
@@ -1020,6 +1098,27 @@
   <data name="comboBox4.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="comboBox4.Items" xml:space="preserve">
+    <value>台北</value>
+  </data>
+  <data name="comboBox4.Items1" xml:space="preserve">
+    <value>新北</value>
+  </data>
+  <data name="comboBox4.Items2" xml:space="preserve">
+    <value>桃園</value>
+  </data>
+  <data name="comboBox4.Items3" xml:space="preserve">
+    <value>新竹</value>
+  </data>
+  <data name="comboBox4.Items4" xml:space="preserve">
+    <value>苗栗</value>
+  </data>
+  <data name="comboBox4.Items5" xml:space="preserve">
+    <value>台中</value>
+  </data>
+  <data name="comboBox4.Items6" xml:space="preserve">
+    <value>彰化</value>
+  </data>
   <data name="comboBox4.Location" type="System.Drawing.Point, System.Drawing">
     <value>150, 220</value>
   </data>
@@ -1067,6 +1166,15 @@
   </data>
   <data name="comboBox3.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
+  </data>
+  <data name="comboBox3.Items" xml:space="preserve">
+    <value>低</value>
+  </data>
+  <data name="comboBox3.Items1" xml:space="preserve">
+    <value>中</value>
+  </data>
+  <data name="comboBox3.Items2" xml:space="preserve">
+    <value>高</value>
   </data>
   <data name="comboBox3.Location" type="System.Drawing.Point, System.Drawing">
     <value>512, 68</value>
@@ -1829,6 +1937,21 @@
   <data name="comboBox5.FlatStyle" type="System.Windows.Forms.FlatStyle, System.Windows.Forms">
     <value>Flat</value>
   </data>
+  <data name="comboBox5.Items" xml:space="preserve">
+    <value>列車事故</value>
+  </data>
+  <data name="comboBox5.Items1" xml:space="preserve">
+    <value>突發健康事件</value>
+  </data>
+  <data name="comboBox5.Items2" xml:space="preserve">
+    <value>恐怖襲擊</value>
+  </data>
+  <data name="comboBox5.Items3" xml:space="preserve">
+    <value>能源故障</value>
+  </data>
+  <data name="comboBox5.Items4" xml:space="preserve">
+    <value>乘客滯留</value>
+  </data>
   <data name="comboBox5.Location" type="System.Drawing.Point, System.Drawing">
     <value>115, 50</value>
   </data>
@@ -2155,6 +2278,30 @@
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>Form1</value>
+  </data>
+  <data name="&gt;&gt;車次.Name" xml:space="preserve">
+    <value>車次</value>
+  </data>
+  <data name="&gt;&gt;車次.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;時間.Name" xml:space="preserve">
+    <value>時間</value>
+  </data>
+  <data name="&gt;&gt;時間.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;開往.Name" xml:space="preserve">
+    <value>開往</value>
+  </data>
+  <data name="&gt;&gt;開往.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;狀態.Name" xml:space="preserve">
+    <value>狀態</value>
+  </data>
+  <data name="&gt;&gt;狀態.Type" xml:space="preserve">
+    <value>System.Windows.Forms.DataGridViewTextBoxColumn, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;timer1.Name" xml:space="preserve">
     <value>timer1</value>

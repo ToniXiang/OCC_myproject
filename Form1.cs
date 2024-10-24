@@ -19,80 +19,60 @@ namespace 簡易的行控中心
     {
         private static List<Train> trains = new List<Train>();
         private static List<Station> stations = new List<Station>();
-        private static SqlConnection sqlconnection = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True");
-        private static CheckBox[] checks;
-        private static List<Label> labels1 = new List<Label>();
-        private static readonly List<string> tmp = new List<string>() { "高", "中", "低" };
+        private static List<CheckBox> checks;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private static readonly double delta_t = 1.0;
-        public static PictureBox[] pic1, pic2;
         public Form1()
         {
             InitializeComponent();
             string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
-            pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
-            pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
-            labels1.AddRange(new Label[] { label2, label3, label12, label13, label14, label15, label16 });
-            DrawReadImg.DoImg(projectDirectory);
+            PictureBox[] pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
+            PictureBox[] pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
+            checks = new List<CheckBox> { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
+            List<Label> labels = new List<Label> { label2, label3, label12, label13, label14, label15, label16 };
+            DrawReadImg.DoImg(projectDirectory, ref pic1, ref pic2);
             this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(projectDirectory, "programming.png"))).GetHicon());
-            foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
+            Action<Control> attachMouseEvents = control =>
             {
                 control.MouseDown += Form1_MouseDown;
                 control.MouseUp += Form1_MouseUp;
                 control.MouseMove += Form1_MouseMove;
+            };
+            foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
+            {
+                attachMouseEvents(control);
                 if (control is GroupBox groupBox)
                 {
-                    foreach (var comboBox in groupBox.Controls.OfType<ComboBox>())
-                    {
-                        comboBox.DrawMode = DrawMode.OwnerDrawFixed;
-                        comboBox.DrawItem += DrawItem;
-                    }
-                    foreach(var label in groupBox.Controls.OfType<Label>())
-                    {
-                        label.MouseDown += Form1_MouseDown;
-                        label.MouseUp += Form1_MouseUp;
-                        label.MouseMove += Form1_MouseMove;
-                    }
+                    groupBox.Controls.OfType<ComboBox>().ToList().ForEach(x => { x.DrawMode = DrawMode.OwnerDrawFixed; x.DrawItem += DrawItem; });
+                    groupBox.Controls.OfType<Label>().ToList().ForEach(x => attachMouseEvents(x));
                 }
             }
-            labels1.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
+            labels.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
             TrainInfo.info = new string[] { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
             int[] limitSpeeds = { 135, 135, 130, 125, 140, 150 };
             int[] lengths = { 2, 4, 4, 2, 2, 1 };
             int[] platform = { 2, 1, 1, 1, 1, 1, 2 };
-            int[] prio = { 0, 1, 1, 1, 2, 2, 0 };
+            int[] prio = { 2, 2, 1, 0, 1, 1, 2 };
             for (int i = 0; i < 7; i++)
             {
-                stations.Add(new Station(TrainInfo.info[i], platform[i], prio[i], labels1[i]));
+                stations.Add(new Station(TrainInfo.info[i], platform[i], prio[i], labels[i]));
             }
-            List<Track> tracks = new List<Track>();
-            tracks.Add(null);
+            List<Track> tracks = new List<Track>() { null,null };
             for (int i = 0; i < 6; i++)
             {
-                tracks.Add(new Track(limitSpeeds[i], lengths[i], stations[i], stations[i + 1], pic1[i], pic2[i]));
+                tracks.Insert(1 + i, new Track(limitSpeeds[i], lengths[i], stations[i], stations[i + 1], pic1[i], pic2[i]));
             }
-            tracks.Add(null);
             for (int i = 0; i < 7; i++)
             {
                 stations[i].set_connect(tracks[i], tracks[i + 1]);
             }
-            trains.Add(new Train("3104", 1, stations[0], stations[6]));
-            trains.Add(new Train("3211", 2, stations[6], stations[0]));
-            trains.Add(new Train("3288", 2, stations[6], stations[5]));
-            trains.Add(new Train("3518", 2, stations[3], stations[0]));
-            trains.Add(new Train("3704", 2, stations[5], stations[3]));
+            trains.Add(new Train("3104", 0, stations[0], stations[6]));
+            trains.Add(new Train("3211", 0, stations[6], stations[0]));
+            trains.Add(new Train("3288", 0, stations[6], stations[5]));
+            trains.Add(new Train("3518", 0, stations[3], stations[0]));
+            trains.Add(new Train("3704", 0, stations[5], stations[3]));
             comboBox1.Items.AddRange(trains.Select(x => x.name).ToArray());
-            comboBox2.Items.AddRange(stations.Select(x => x.name).ToArray());
-            comboBox4.Items.AddRange(stations.Select(x => x.name).ToArray());
-            tmp.ForEach(x => comboBox3.Items.Add(x));
-            tmp.ForEach(x => comboBox7.Items.Add(x));
-            List<string> tmp1 = new List<string>() { "車次", "時間", "開往", "狀態" };
-            tmp1.ForEach(x => dgv.Columns.Add(x, x));
-            dgv.Columns.Cast<DataGridViewColumn>().ToList().ForEach(x => x.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells);
-            string[] tmp2 = { "列車事故", "突發健康事件", "恐怖襲擊", "能源故障", "乘客滯留" };
-            comboBox5.Items.AddRange(tmp2);
-            checks = new CheckBox[] { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
             comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
+            dgv.Columns.Cast<DataGridViewColumn>().ToList().ForEach(x => x.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells);
             timer1.Start();
         }
         #region 自訂 Combobox
@@ -116,76 +96,74 @@ namespace 簡易的行控中心
         private static Point offset;
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = true;
-                offset = e.Location;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            isDragging = true;
+            offset = e.Location;
         }
 
         private void Form1_MouseUp(object sender, MouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Left)
-            {
-                isDragging = false;
-            }
+            if (e.Button != MouseButtons.Left) return;
+            isDragging = false;
         }
 
         private void Form1_MouseMove(object sender, MouseEventArgs e)
         {
-            if (isDragging)
-            {
-                Point newLocation = this.PointToScreen(e.Location);
-                this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
-            }
+            if (!isDragging) return;
+            Point newLocation = this.PointToScreen(e.Location);
+            this.Location = new Point(newLocation.X - offset.X, newLocation.Y - offset.Y);
         }
         #endregion
         #region 用戶回饋傳給資料庫 & 離開
-        private async void pictureBox3_Click(object sender, EventArgs e)
+        private void pictureBox3_Click(object sender, EventArgs e)
+        {
+            DialogResult result = new DialogResult();
+            using (Form2 f2 = new Form2())
+            {
+                f2.Focus();
+                f2.DataInputCompleted += Form2_DataInputCompleted;
+                result = f2.ShowDialog();
+                f2.Dispose();
+            }
+            result = MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
+            if (result == DialogResult.Yes) Application.Exit();
+        }
+        private async void Form2_DataInputCompleted(object sender, DICEventArgs e)
         {
             try
             {
-                DialogResult result = new DialogResult();
-                if (sqlconnection.State == ConnectionState.Closed)
+                using(SqlConnection sql = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True"))
                 {
-                    await sqlconnection.OpenAsync();
-                }
-                using (Form2 f2 = new Form2())
-                {
-                    f2.Focus();
-                    f2.DataInputCompleted += Form2_DataInputCompleted;
-                    result = f2.ShowDialog();
-                    if (result == DialogResult.OK)
+                    if (sql.State == ConnectionState.Closed) await sql.OpenAsync();
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sql))
                     {
-                        //Nothing...
+                        //欄位名 資料類型
+                        cmd.Parameters.AddWithValue("@email", e.email);//電子郵件 nvarchar(30)
+                        cmd.Parameters.AddWithValue("@type", e.type);//回饋類型 nvarchar(20)
+                        cmd.Parameters.AddWithValue("@content", e.content);//具體內容 nchar(50)
+                        cmd.Parameters.AddWithValue("@isok", e.isOK);//是否願意參與進一步討論或測試新功能 bit
+                        cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));//日期 nchar(10)
+                        cmd.ExecuteNonQuery();
                     }
-                    f2.Dispose();
-                }
-                sqlconnection.Close();
-                result = MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
-                if (result == DialogResult.Yes)
-                {
-                    Application.Exit();
-                }
+                    sql.Close();
+                }               
             }
             catch (TaskCanceledException)
             {
+                // 請使用自己的資料庫連接資訊，確保應用程式能夠正常連接至資料庫並運行
+                // 請確認資料庫的連接字串是否正確，包括伺服器名稱、連接埠、資料庫名稱，以及是否使用正確的驗證方式。
                 //Nothing...
             }
         }
-
-        private void Form2_DataInputCompleted(object sender, DICEventArgs e)
-        {
-            using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sqlconnection))
-            {
-                cmd.Parameters.AddWithValue("@email", e.email);
-                cmd.Parameters.AddWithValue("@type", e.type);
-                cmd.Parameters.AddWithValue("@content", e.content);
-                cmd.Parameters.AddWithValue("@isok", e.isOK);
-                cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));
-                cmd.ExecuteNonQuery();
-            }
-        }
+        /*
+         * 補充註解：
+         *  1.顯示回饋表單（Form2），用於讓使用者輸入資料。表單顯示於最上層。
+         *  2.當使用者輸入完成後，透過 DataInputCompleted 事件回傳資料。
+         *  3.在使用者輸入完成並關閉表單後，與資料庫的連線（異步打開與關閉）並將有完整填寫的回饋資料存入資料庫並關
+         *  4.系統彈出確認對話框，詢問使用者是否要離開應用程式。
+         *  
+         *  using 語句可以確保 (...) 在使用完畢後正確地釋放資源
+         */
         #endregion
         #region 時間_多執行緒
         private void timer1_Tick(object sender, EventArgs e)
@@ -291,7 +269,7 @@ namespace 簡易的行控中心
                         {
                             double start_u = train.speed / 3.6;// 速度 m/s
                             double start_a = 1.0; // 假設列車啟動加速度為 1.0 m/s²
-                            start_u = start_u + start_a * delta_t;
+                            start_u = start_u + start_a * 1.0;
                             train.speed = start_u * 3.6 > 110.0 ? 110.0 : start_u * 3.6;
                             if (train.speed == 110) train.wait = 0;
                             fg = true;                       
@@ -328,7 +306,7 @@ namespace 簡易的行控中心
                             {
                                 fg = true;                               
                                 train.change_image("O");
-                                end_u = end_u + (-end_a) * delta_t;
+                                end_u = end_u + (-end_a) * 1.0;
                                 train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
                                 train.stats = "正在進站中";
                             }
@@ -408,7 +386,7 @@ namespace 簡易的行控中心
                     {
                         if (((Station)cur).name == comboBox2.Text)
                         {
-                            if(((Station)cur).priority <= train.priority)
+                            if(((Station)cur).priority >= train.priority)
                             {
                                 dgv.Rows.Add(train.name, train.getTime(total_length, wait), train.destination.name, train.stats);
                             }
@@ -418,7 +396,7 @@ namespace 簡易的行控中心
                         {
                             break;
                         }
-                        if (train.priority <= ((Station)cur).priority) wait += 10;
+                        if (train.priority >= ((Station)cur).priority) wait += 10;
                         cur = train.next_bool ? ((Station)cur).track1 : ((Station)cur).track2;
                     }
                     else
@@ -434,8 +412,8 @@ namespace 簡易的行控中心
             label11.Text = "";
             textBox3.Text = $"{stations[comboBox2.SelectedIndex].platform}";
             comboBox7.SelectedIndex = stations[comboBox2.SelectedIndex].priority;
-            labels1.ForEach(x => x.ForeColor = Color.AliceBlue);
-            labels1[comboBox2.SelectedIndex].ForeColor = Color.Aqua;
+            stations.ForEach(x => x.label.ForeColor = Color.AliceBlue);
+            stations[comboBox2.SelectedIndex].label.ForeColor = Color.Aqua;
             dgv_set();
             await FocusMethod();
         }
@@ -445,7 +423,7 @@ namespace 簡易的行控中心
             {
                 if (stations[comboBox2.SelectedIndex].priority != comboBox7.SelectedIndex)
                 {
-                    label11.Text = $"車站優先權已更改 {tmp[stations[comboBox2.SelectedIndex].priority]}➡️{tmp[comboBox7.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    label11.Text = $"車站優先權已更改 {comboBox7.Items[stations[comboBox2.SelectedIndex].priority]}➡️{comboBox7.Items[comboBox7.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
                     stations[comboBox2.SelectedIndex].priority = comboBox7.SelectedIndex;
                     dgv_set();
                 }
@@ -462,7 +440,7 @@ namespace 簡易的行控中心
             {
                 if(trains[comboBox1.SelectedIndex].priority != comboBox3.SelectedIndex)
                 {
-                    label7.Text = $"列車優先權已更改\r\n{tmp[trains[comboBox1.SelectedIndex].priority]}➡️{tmp[comboBox3.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    label7.Text = $"列車優先權已更改\r\n{comboBox3.Items[trains[comboBox1.SelectedIndex].priority]}➡️{comboBox3.Items[comboBox3.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
                     trains[comboBox1.SelectedIndex].priority = comboBox3.SelectedIndex;
                     if (comboBox2.SelectedIndex != -1)
                     {
@@ -512,6 +490,7 @@ namespace 簡易的行控中心
         };
         private async void incident_change(object sender, EventArgs e)
         {
+            if (comboBox5.SelectedIndex == -1) return;
             for (int i = 0; i < 6; i++)
             {
                 checks[i].Checked = is_check[comboBox5.SelectedIndex, i];
@@ -559,8 +538,8 @@ namespace 簡易的行控中心
                         return;
                     }
                     double u = train.speed / 3.6;
-                    u = u + a * delta_t;
-                    rd = rd + a * delta_t;
+                    u = u + a * 1.0;
+                    rd = rd + a * 1.0;
                     train.speed = u * 3.6;
                     train_change(sender, e);
                     await Task.Delay(1000);
@@ -609,8 +588,8 @@ namespace 簡易的行控中心
                         return;
                     }
                     double u = train.speed / 3.6;
-                    u = u + a * delta_t;
-                    rd = rd + (-a) * delta_t;
+                    u = u + a * 1.0;
+                    rd = rd + (-a) * 1.0;
                     train.speed = u * 3.6;
                     train_change(sender, e);
                     await Task.Delay(1000);
@@ -668,7 +647,7 @@ namespace 簡易的行控中心
                         return;
                     }
                     double u = train.speed / 3.6;
-                    u = u + a * delta_t;
+                    u = u + a * 1.0;
                     train.speed = u < 0 ? 0 : u * 3.6;
                     train_change(sender, e);
                     train.change_image("B");
@@ -721,7 +700,7 @@ namespace 簡易的行控中心
                         //Nothing...
                     }
                     double u = train.speed / 3.6;
-                    u = u + a * delta_t;
+                    u = u + a * 1.0;
                     trains[comboBox1.SelectedIndex].speed = u * 3.6 > 110.0 ? 110.0 : u * 3.6;
                     train_change(sender, e);
                     train.change_image("B");
@@ -764,6 +743,9 @@ namespace 簡易的行控中心
                 MessageBox.Show($"事件：{comboBox5.Text}\r\n\r\n列車：{comboBox6.Text}\r\n\r\n已聯絡：" +
                     $"{string.Join("、", checks.Where(x => x.Checked).Select(x => x.Text))}\r\n\r\n" +
                     $"詳細內容：\r\n{(richTextBox1.Text == "" ? "None" : richTextBox1.Text)}", "緊急處理", MessageBoxButtons.OK);
+                comboBox5.SelectedIndex = comboBox6.SelectedIndex = -1;
+                checks.ForEach(check => check.Checked = false);
+                richTextBox1.Text = "";
             }
         }
         #endregion
@@ -771,26 +753,17 @@ namespace 簡易的行控中心
         private void Label_Click(object sender,EventArgs args)
         {
             Label clickedLabel = sender as Label;
-            if (clickedLabel != null)
-            {
-                comboBox2.SelectedIndex = labels1.IndexOf(clickedLabel);
-            }
+            if (clickedLabel != null) comboBox2.SelectedIndex = stations.FindIndex(x => x.label.Name == clickedLabel.Name);
         }
         private void Label_MouseMove(object sender,EventArgs args)
         {
             Label label = sender as Label;
-            if (label != null)
-            {
-                label.Font= new Font("微软雅黑", 12, FontStyle.Bold);
-            }
+            if (label != null) label.Font = new Font("微软雅黑", 12, FontStyle.Bold);
         }
         private void Label_MouseLeave(object sender,EventArgs args)
         {
             Label leftLabel = sender as Label;
-            if (leftLabel != null)
-            {
-                leftLabel.Font = new Font("微软雅黑", 12);
-            }
+            if (leftLabel != null) leftLabel.Font = new Font("微软雅黑", 12);
         }
         #endregion
         #region ComboBox 的焦點變更

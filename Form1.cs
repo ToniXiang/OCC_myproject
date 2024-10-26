@@ -13,66 +13,42 @@ using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
 using static 簡易的行控中心.Form2;
+using 簡易的行控中心.TrafficComponents;
 namespace 簡易的行控中心
 {
     public partial class Form1 : Form
     {
-        private static List<Train> trains = new List<Train>();
-        private static List<Station> stations = new List<Station>();
-        private static List<CheckBox> checks;
         private CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         public Form1()
         {
             InitializeComponent();
-            string projectDirectory = Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
+            Traffic.projectDirectory= Directory.GetParent(AppDomain.CurrentDomain.BaseDirectory).Parent.Parent.FullName;
             PictureBox[] pic1 = new PictureBox[] { pictureBox8, pictureBox9, pictureBox10, pictureBox11, pictureBox12, pictureBox13 };
             PictureBox[] pic2 = new PictureBox[] { pictureBox1, pictureBox2, pictureBox4, pictureBox5, pictureBox6, pictureBox7 };
             checks = new List<CheckBox> { checkBox1, checkBox2, checkBox3, checkBox4, checkBox5, checkBox6 };
             List<Label> labels = new List<Label> { label2, label3, label12, label13, label14, label15, label16 };
-            DrawReadImg.DoImg(projectDirectory, ref pic1, ref pic2);
-            this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(projectDirectory, "programming.png"))).GetHicon());
-            Action<Control> attachMouseEvents = control =>
-            {
-                control.MouseDown += Form1_MouseDown;
-                control.MouseUp += Form1_MouseUp;
-                control.MouseMove += Form1_MouseMove;
-            };
-            foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
-            {
-                attachMouseEvents(control);
-                if (control is GroupBox groupBox)
-                {
-                    groupBox.Controls.OfType<ComboBox>().ToList().ForEach(x => { x.DrawMode = DrawMode.OwnerDrawFixed; x.DrawItem += DrawItem; });
-                    groupBox.Controls.OfType<Label>().ToList().ForEach(x => attachMouseEvents(x));
-                }
-            }
-            labels.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
-            TrainInfo.info = new string[] { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
+            DrawReadImg.DoImg(Traffic.projectDirectory, ref pic1, ref pic2);
+            Traffic.info = new string[] { "台北", "新北", "桃園", "新竹", "苗栗", "台中", "彰化" };
             int[] limitSpeeds = { 135, 135, 130, 125, 140, 150 };
             int[] lengths = { 2, 4, 4, 2, 2, 1 };
-            int[] platform = { 2, 1, 1, 1, 1, 1, 2 };
+            int[] platform = { 4, 2, 2, 2, 2, 2, 4 };
             int[] prio = { 2, 2, 1, 0, 1, 1, 2 };
-            for (int i = 0; i < 7; i++)
+            for(int i = 0; i < 6; i++)
             {
-                stations.Add(new Station(TrainInfo.info[i], platform[i], prio[i], labels[i]));
+                Traffic.traffics.Add(new Station(Traffic.info[i], platform[i], prio[i], labels[i]));
+                Traffic.traffics.Add(new Track(limitSpeeds[i], lengths[i], pic1[i], pic2[i]));
             }
-            List<Track> tracks = new List<Track>() { null,null };
-            for (int i = 0; i < 6; i++)
-            {
-                tracks.Insert(1 + i, new Track(limitSpeeds[i], lengths[i], stations[i], stations[i + 1], pic1[i], pic2[i]));
-            }
-            for (int i = 0; i < 7; i++)
-            {
-                stations[i].set_connect(tracks[i], tracks[i + 1]);
-            }
-            trains.Add(new Train("3104", 0, stations[0], stations[6]));
-            trains.Add(new Train("3211", 0, stations[6], stations[0]));
-            trains.Add(new Train("3288", 0, stations[6], stations[5]));
-            trains.Add(new Train("3518", 0, stations[3], stations[0]));
-            trains.Add(new Train("3704", 0, stations[5], stations[3]));
-            comboBox1.Items.AddRange(trains.Select(x => x.name).ToArray());
-            comboBox6.Items.AddRange(trains.Select(x => x.name).ToArray());
+            Traffic.traffics.Add(new Station(Traffic.info.Last(), platform.Last(), prio.Last(), labels.Last()));
+            Traffic.trains.Add(new Train("3104", 0, "台北", "彰化"));
+            Traffic.trains.Add(new Train("3211", 0, "新北", "桃園"));
+            Traffic.trains.Add(new Train("3288", 0, "台中", "彰化"));
+            Traffic.trains.Add(new Train("3518", 0, "彰化", "新竹"));
+            Traffic.trains.Add(new Train("3704", 0, "桃園", "台北"));
+            Traffic.trains.ForEach(x => { comboBox1.Items.Add(x.name); comboBox6.Items.Add(x.name); });
             dgv.Columns.Cast<DataGridViewColumn>().ToList().ForEach(x => x.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells);
+            this.Icon = Icon.FromHandle((new Bitmap(Path.Combine(Traffic.projectDirectory, "programming.png"))).GetHicon());
+            InitializeDrag();
+            labels.ForEach(x => { x.Click += Label_Click; x.MouseMove += Label_MouseMove; x.MouseLeave += Label_MouseLeave; });
             timer1.Start();
         }
         #region 自訂 Combobox
@@ -94,6 +70,24 @@ namespace 簡易的行控中心
         #region 可拖曳 Form1 視窗
         private static bool isDragging;
         private static Point offset;
+        private void InitializeDrag()
+        {
+            Action<Control> attachMouseEvents = control =>
+            {
+                control.MouseDown += Form1_MouseDown;
+                control.MouseUp += Form1_MouseUp;
+                control.MouseMove += Form1_MouseMove;
+            };
+            foreach (var control in this.Controls.OfType<Control>().Where(c => c is TextBox || c is Label || c is GroupBox))
+            {
+                attachMouseEvents(control);
+                if (control is GroupBox groupBox)
+                {
+                    groupBox.Controls.OfType<ComboBox>().ToList().ForEach(x => { x.DrawMode = DrawMode.OwnerDrawFixed; x.DrawItem += DrawItem; });
+                    groupBox.Controls.OfType<Label>().ToList().ForEach(x => attachMouseEvents(x));
+                }
+            }
+        }
         private void Form1_MouseDown(object sender, MouseEventArgs e)
         {
             if (e.Button != MouseButtons.Left) return;
@@ -199,221 +193,203 @@ namespace 簡易的行控中心
                 timer2.Stop();
                 label17.Text = "暫停模擬";
                 label17.ForeColor = Color.Red;
-                button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = button7.Enabled = false;
+                button3.Enabled = button4.Enabled = button7.Enabled = false;
             }
         }
         #endregion
         #region 行駛列車_多執行緒
         private void timer2_Tick(object sender, EventArgs e)
         {
-            foreach (var train in trains)
+            foreach (var train in Traffic.trains)
             {
-                try
+                if ((train.cur + 2) % 2 == 0)
                 {
-                    if (train.cur_st.isStation())
+                    if (train.cur == train.destination)
                     {
-                        if (((Station)train.cur_st).name == train.destination.name)
+                        train.stats = "已到達終點站";
+                        if (comboBox1.SelectedIndex == train.cur / 2)
                         {
-                            train.stats = "已到達終點站";
-                            if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
-                            {
-                                button3.Enabled = button4.Enabled = button5.Enabled = button6.Enabled = false;
-                            }
-                        }
-                        else
-                        {
-                            train.stats = "等待出站";
-                            Track next_track = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
-                            Station next_station = train.next_bool ? next_track.station1 : next_track.station2;
-                            int rd = 0; // 紀錄列車開往的站有多少列車數量
-                            bool check = false; // 紀錄同方向列車是否在車站同時發車
-                            foreach(Train other_train in trains)
-                            {
-                                if (train == other_train) continue;
-                                if (train.next_bool == other_train.next_bool)
-                                {
-                                    if (next_track == other_train.cur_st || next_station == other_train.cur_st)
-                                    {
-                                        rd++;
-                                    }
-                                    else if (train.cur_st == other_train.cur_st && trains.IndexOf(train) > trains.IndexOf(other_train))
-                                    {
-                                        check = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if (rd > next_station.platform || check)
-                            {
-                                break;
-                            }
-                            if (comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
-                            {
-                                button3.Enabled = button4.Enabled = false;
-                                button5.Enabled = button6.Enabled = true;
-                                button5.Text = "啟動";
-                            }
-                            if (train.wait >= 0 && ++train.wait >= 10 && (train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2) != null)
-                            {
-                                train.cur_st = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
-                                train.wait = -1;
-                                train.change_image("O");
-                                train.stats = "正在行駛中";
-                            }
+                            button3.Enabled = button4.Enabled = false;
                         }
                     }
                     else
                     {
-                        bool fg = false;
-                        if (train.wait == -1 && train.speed < 110)
+                        train.stats = "等待出站";
+                        bool check = false;
+                        int rd = 0;
+                        foreach(Train other_train in Traffic.trains)
                         {
-                            double start_u = train.speed / 3.6;// 速度 m/s
-                            double start_a = 1.0; // 假設列車啟動加速度為 1.0 m/s²
-                            start_u = start_u + start_a * 1.0;
-                            train.speed = start_u * 3.6 > 110.0 ? 110.0 : start_u * 3.6;
-                            if (train.speed == 110) train.wait = 0;
-                            fg = true;                       
-                        }
-                        else
-                        {
-                            train.change_image("B");
-                        }
-                        train.move();
-                        double end_u = train.speed / 3.6;// 速度 m/s
-                        double end_a = 0.8; // 假設列車煞車加速度為 - 0.8 m/s²
-                        double s = end_u * end_u / (2 * end_a);// 煞車距離
-                        if (s >= (((Track)train.cur_st).length - train.length) * 1E3)
-                        {
-                            if ((train.next_bool ? ((Track)train.cur_st).station1.priority : ((Track)train.cur_st).station2.priority) > train.priority)
+                            if (train == other_train) continue;
+                            //紀錄同方向的 軌道和下一站是否有幾個列車
+                            if (train.next == other_train.next)
                             {
-                                if (train.length >= ((Track)train.cur_st).length)
+                                if(train.next + train.cur == other_train.cur)
                                 {
-                                    train.change_image("");
-                                    train.length = 0;
-                                    train.cur_st = train.next_bool ? (((Track)train.cur_st).station1).track1 : (((Track)train.cur_st).station2).track2;
-                                    train.change_image("B");
+                                    check = true;
+                                    break;
+                                }
+                                else if (train.next * 2 + train.cur == other_train.cur)
+                                {
+                                    rd++;
                                 }
                             }
-                            else if (train.length >= ((Track)train.cur_st).length && train.speed <= 4)
-                            {
-                                fg = true;
-                                train.change_image("");
-                                train.length = 0;
-                                train.speed = 0;
-                                train.cur_st = train.next_bool ? ((Track)train.cur_st).station1 : ((Track)train.cur_st).station2;
-                            }
-                            else
-                            {
-                                fg = true;                               
-                                train.change_image("O");
-                                end_u = end_u + (-end_a) * 1.0;
-                                train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
-                                train.stats = "正在進站中";
-                            }
                         }
-                        else if (train.speed > ((Track)train.cur_st).limitspeed)
+                        if (train.wait == -2 || check || rd >= ((Station)Traffic.traffics[train.cur + train.next * 2]).platform)
                         {
-                            train.change_image("R");
-                            throw new SpeedException($"速度過快，請減速!");
+                            continue;
                         }
-                        if(comboBox1.SelectedIndex == comboBox1.FindStringExact(train.name))
+                        if (comboBox1.SelectedIndex == train.cur / 2)
                         {
-                            if (fg)
+                            button3.Enabled = false;
+                            button4.Enabled = true;
+                        }
+                        if (train.cur + train.next >= 0 && train.cur + train.next < Traffic.traffics.Count && ++train.wait >= 10)
+                        {
+                            train.cur += train.next;
+                            train.wait = 0;
+                            ((Track)Traffic.traffics[train.cur]).change_image("O", train.next);
+                            train.stats = "正在行駛中";
+                            if(comboBox1.SelectedIndex == train.cur / 2)
                             {
-                                button3.Enabled = button4.Enabled = button6.Enabled = false;
-                                button5.Enabled = true;
-                                button5.Text = "煞車";
-                            }
-                            else
-                            {
-                                button3.Enabled = button4.Enabled = true;
+                                button3.Enabled = true;
+                                button4.Enabled = false;
                             }
                         }
                     }
                 }
-                catch (Exception)
+                else
                 {
-                    SystemSounds.Beep.Play();
+                    Track track = (Track)Traffic.traffics[train.cur];
+                    train.move();
+                    double end_u = train.speed / 3.6;// 速度 m/s
+                    double end_a = 2.0; // 假設列車煞車加速度為 - 2.0 m/s²
+                    double s = end_u * end_u / (2 * end_a);// 煞車距離
+                    if (s >= (track.length - train.length) * 1E3)
+                    {
+                        if (((Station)Traffic.traffics[train.cur + train.next]).priority < train.priority)
+                        {
+                            if (train.length >= track.length)
+                            {
+                                track.change_image("", train.next);
+                                train.length = 0;
+                                train.wait = 0;
+                                ((Track)Traffic.traffics[train.cur]).change_image("B", train.next);
+                                train.cur += train.next * 2;
+                            }
+                        }
+                        else if (train.length > track.length && train.speed <= 4)
+                        {
+                            track.change_image("", train.next);
+                            train.length = 0;
+                            train.speed = 0;
+                            train.cur += train.next;
+                        }
+                        else
+                        {
+                            track.change_image("O", train.next);
+                            end_u = end_u + (-end_a) * 1.0;
+                            train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
+                            train.stats = "正在進站中";
+                        }
+                    }
+                    else if (train.speed < 110 && train.wait != -2)
+                    {
+                        double start_u = train.speed / 3.6;// 速度 m/s
+                        double start_a = 2.5; // 假設列車啟動加速度為 2.5 m/s²
+                        start_u = start_u + start_a;
+                        train.speed = start_u * 3.6 > 110.0 ? 110.0 : start_u * 3.6;
+                        train.wait += 1;
+                        if (train.wait == 10) track.change_image("B", train.next);
+                        button3.Text = "煞車";
+                    }
+                    else if (train.speed > track.limitspeed)
+                    {
+                        track.change_image("R", train.next);
+                        train.stats = $"速度過快，請減速!";
+                    }                    
                 }
             }
-            if(comboBox1.SelectedIndex != -1) train_set();
-            if (comboBox2.SelectedIndex != -1) dgv_set();
+            train_set();
+            dgv_set();
         }
         #endregion
         #region 下拉選單的變更
         private async void train_change(object sender, EventArgs e)
         {
             label7.Text = "";
-            button5.Text = trains[comboBox1.SelectedIndex].speed != 0 ? "煞車" : "啟動";
-            button6.Text = trains[comboBox1.SelectedIndex].cur_st.isStation() ? "停靠站" : "發車";
-            comboBox4.SelectedIndex = comboBox4.FindStringExact(trains[comboBox1.SelectedIndex].destination.name);
-            comboBox3.SelectedIndex = trains[comboBox1.SelectedIndex].priority;
-            if (trains[comboBox1.SelectedIndex].wait == -2)
+            textBox2.Text = $"{Traffic.trains[comboBox1.SelectedIndex].speed.ToString()}km/h";
+            button3.Text = Traffic.trains[comboBox1.SelectedIndex].speed != 0 ? "煞車" : "啟動";
+            comboBox4.SelectedIndex = Traffic.trains[comboBox1.SelectedIndex].destination / 2;
+            comboBox3.SelectedIndex = Traffic.trains[comboBox1.SelectedIndex].priority;
+            if (button1.Text == "開始") return;
+            if ((Traffic.trains[comboBox1.SelectedIndex].cur + 2) % 2 == 0 && Traffic.trains[comboBox1.SelectedIndex].wait == -2)
             {
-                button6.Text = "發車";
-            }
-            else if (trains[comboBox1.SelectedIndex].wait == -1)
-            {
-                button6.Enabled = false;
+                button4.Text = "發車";
+                button3.Enabled = false;
+                button4.Enabled = true;
             }
             else
             {
-                button6.Text = "停靠站";
+                button4.Text = "停靠站";
+                button3.Enabled = true;
+                button4.Enabled = false;
             }
             train_set();
             await FocusMethod();
         }
         public void train_set()
         {
-            textBox2.Text = $"{Math.Round(trains[comboBox1.SelectedIndex].speed, 2)} km/hr";
+            if (comboBox1.SelectedIndex == -1) return;
+            textBox2.Text = $"{Math.Round(Traffic.trains[comboBox1.SelectedIndex].speed, 2)} km/hr";
         }
         private void dgv_set()
         {
+            if(comboBox2.SelectedIndex == -1)return;
             dgv.Rows.Clear();
-            foreach (Train train in trains)
+            foreach (Train train in Traffic.trains)
             {
-                double total_length = 0;
+                int cur_index = train.cur;
+                double total_length = -train.length;
                 int wait = 0;
-                if (train.cur_st.isStation() && ((Station)train.cur_st).name == comboBox2.Text)
+                if ((cur_index + 2) % 2 == 0 && cur_index == Traffic.GetIndex(comboBox2.Text))
                 {
-                    dgv.Rows.Add(train.name, "等待發車", train.destination.name, train.stats);
+                    dgv.Rows.Add(train.name, "等待發車", ((Station)Traffic.traffics[train.destination]).name, train.stats);
                     continue;
                 }
-                TrafficNode cur = train.cur_st;
-                while (cur != null)
+                while (cur_index >= 0 && cur_index < Traffic.traffics.Count)
                 {
-                    if (cur.isStation())
+                    if ((cur_index + 2) % 2 == 0)
                     {
-                        if (((Station)cur).name == comboBox2.Text)
+                        if (((Station)Traffic.traffics[cur_index]).name == comboBox2.Text && ((Station)Traffic.traffics[cur_index]).priority >= train.priority) 
                         {
-                            if(((Station)cur).priority >= train.priority)
-                            {
-                                dgv.Rows.Add(train.name, train.getTime(total_length, wait), train.destination.name, train.stats);
-                            }
+                            dgv.Rows.Add(train.name, Traffic.GetTime(total_length, wait), ((Station)Traffic.traffics[train.destination]).name, train.stats);
                             break;
                         }
-                        else if (((Station)cur).name == train.destination.name)
+                        if (cur_index == train.destination)
                         {
                             break;
                         }
-                        if (train.priority >= ((Station)cur).priority) wait += 10;
-                        cur = train.next_bool ? ((Station)cur).track1 : ((Station)cur).track2;
+                        else if (train.priority <= ((Station)Traffic.traffics[cur_index]).priority) wait += 10;
                     }
                     else
                     {
-                        total_length += ((Track)cur).length;
-                        cur = train.next_bool ? ((Track)cur).station1 : ((Track)cur).station2;
+                        total_length += ((Track)Traffic.traffics[cur_index]).length;
                     }
+                    cur_index += train.next;
                 }
             }
         }
         private async void station_change(object sender, EventArgs e)
         {
             label11.Text = "";
-            textBox3.Text = $"{stations[comboBox2.SelectedIndex].platform}";
-            comboBox7.SelectedIndex = stations[comboBox2.SelectedIndex].priority;
-            stations.ForEach(x => x.label.ForeColor = Color.AliceBlue);
-            stations[comboBox2.SelectedIndex].label.ForeColor = Color.Aqua;
+            Station cur = ((Station)Traffic.traffics[comboBox2.SelectedIndex * 2]);
+            textBox3.Text = $"{cur.platform}";
+            comboBox7.SelectedIndex = cur.priority;
+            for(int i = 0; i < Traffic.traffics.Count; i += 2)
+            {
+                ((Station)Traffic.traffics[i]).label.ForeColor = Color.AliceBlue;
+            }
+            cur.label.ForeColor = Color.Aqua;
             dgv_set();
             await FocusMethod();
         }
@@ -421,10 +397,11 @@ namespace 簡易的行控中心
         {
             if (comboBox2.SelectedIndex != -1 && comboBox7.SelectedIndex != -1)
             {
-                if (stations[comboBox2.SelectedIndex].priority != comboBox7.SelectedIndex)
+                Station cur = ((Station)Traffic.traffics[comboBox2.SelectedIndex * 2]);
+                if (cur.priority != comboBox7.SelectedIndex)
                 {
-                    label11.Text = $"車站優先權已更改 {comboBox7.Items[stations[comboBox2.SelectedIndex].priority]}➡️{comboBox7.Items[comboBox7.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
-                    stations[comboBox2.SelectedIndex].priority = comboBox7.SelectedIndex;
+                    label11.Text = $"車站優先權已更改 {comboBox7.Items[cur.priority]}➡️{comboBox7.Items[comboBox7.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    cur.priority = comboBox7.SelectedIndex;
                     dgv_set();
                 }
             }
@@ -438,10 +415,11 @@ namespace 簡易的行控中心
         {
             if (comboBox1.SelectedIndex != -1 && comboBox3.SelectedIndex != -1)
             {
-                if(trains[comboBox1.SelectedIndex].priority != comboBox3.SelectedIndex)
+                Train train = Traffic.trains[comboBox1.SelectedIndex];
+                if (train.priority != comboBox3.SelectedIndex)
                 {
-                    label7.Text = $"列車優先權已更改\r\n{comboBox3.Items[trains[comboBox1.SelectedIndex].priority]}➡️{comboBox3.Items[comboBox3.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
-                    trains[comboBox1.SelectedIndex].priority = comboBox3.SelectedIndex;
+                    label7.Text = $"列車優先權已更改\r\n{comboBox3.Items[train.priority]}➡️{comboBox3.Items[comboBox3.SelectedIndex]}\r\n時間 : {DateTime.Now.ToString("T")}";
+                    train.priority = comboBox3.SelectedIndex;
                     if (comboBox2.SelectedIndex != -1)
                     {
                         dgv_set();
@@ -462,24 +440,27 @@ namespace 簡易的行控中心
                 comboBox4.SelectedIndex = -1;
                 return;
             }
-            if (trains[comboBox1.SelectedIndex].destination.name != comboBox4.Text)
+            Train train = Traffic.trains[comboBox1.SelectedIndex];
+            int change_destination = Traffic.GetIndex(comboBox4.Text);
+            if (train.destination != change_destination)
             {
-                if (!trains[comboBox1.SelectedIndex].cur_st.isStation())
+                if ((train.cur + 2) % 2 != 0)
                 {
                     MessageBox.Show("列車正在行駛中，請先進站臨停","提示");
-                    comboBox4.Text = trains[comboBox1.SelectedIndex].destination.name;
+                    comboBox4.SelectedIndex = train.destination / 2;
                     return;
                 }
-                if (trains[comboBox1.SelectedIndex].cur_st.isStation() && ((Station)trains[comboBox1.SelectedIndex].cur_st).name == comboBox4.Text)
+                if (train.cur == change_destination)
                 {
-                    trains[comboBox1.SelectedIndex].stats = $"已到達終點站";
+                    train.stats = $"已到達終點站";
                 }
-                label7.Text = $"列車目的地已更改\r\n{trains[comboBox1.SelectedIndex].destination.name}➡️{comboBox4.Text}\r\n時間 : {DateTime.Now.ToString("T")}";
-                trains[comboBox1.SelectedIndex].destination = stations[stations.FindIndex(x => x.name == comboBox4.Text)];
-                trains[comboBox1.SelectedIndex].next_bool = TrainInfo.get_next((Station)trains[comboBox1.SelectedIndex].cur_st, trains[comboBox1.SelectedIndex].destination);
+                label7.Text = $"列車目的地已更改\r\n{((Station)Traffic.traffics[train.destination]).name}➡️{comboBox4.Text}\r\n時間 : {DateTime.Now.ToString("T")}";
+                train.destination = change_destination;
+                train.next = train.cur > change_destination ? 1 : -1;
                 if (comboBox2.SelectedIndex != -1) dgv_set();
             }
         }
+        private static List<CheckBox> checks;
         private static bool[,] is_check =
         {
             { true , true, true, true, true, true },
@@ -507,128 +488,43 @@ namespace 簡易的行控中心
         {
             if (comboBox1.SelectedIndex != -1)
             {
-                if (trains[comboBox1.SelectedIndex].cur_st.isStation()) return;
-                Train train = trains[comboBox1.SelectedIndex];
-                train.wait = 0;
-                button3.Enabled = false;
-                await faster(sender, e, train);
-                train.wait = -1;
-                label7.Text = $"列車已加速\r\n時間 : {DateTime.Now.ToString("T")}";
-                button3.Enabled = true;
-            }
-        }
-        private async Task faster(object sender, EventArgs e,Train train)
-        {
-
-            if (cancellationTokenSource != null)
-            {
-                cancellationTokenSource.Cancel();
-            }
-            cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            try
-            {
-                double rd = 0;
-                double a = 1.0; // 假設列車加速時加速度為 1.0 m/s²
-                do
+                Train train = Traffic.trains[comboBox1.SelectedIndex];
+                if (button3.Text == "煞車")
                 {
-                    if (token.IsCancellationRequested)
-                    {
-                        cancellationTokenSource = null;
-                        return;
-                    }
-                    double u = train.speed / 3.6;
-                    u = u + a * 1.0;
-                    rd = rd + a * 1.0;
-                    train.speed = u * 3.6;
-                    train_change(sender, e);
-                    await Task.Delay(1000);
-                } while (rd * 3.6 < 10.0);
-            }
-            catch (TaskCanceledException)
-            {
-                //Nothing...
-            }
-            finally
-            {
-               cancellationTokenSource = null;
-            }
-        }
-        private async void button4_Click(object sender, EventArgs e)
-        {
-            if(comboBox1.SelectedIndex != -1)
-            {
-                if (trains[comboBox1.SelectedIndex].cur_st.isStation()) return;
-                Train train = trains[comboBox1.SelectedIndex];
-                train.wait = 0;
-                button4.Enabled = false;
-                await slower(sender, e, train);
-                train_set();
-                label7.Text = $"列車已減速\r\n時間 : {DateTime.Now.ToString("T")}";
-                button4.Enabled = true;
-            }
-        }
-        private async Task slower(object sender,EventArgs e,Train train)
-        {
-            if (cancellationTokenSource != null)
-            {
-                cancellationTokenSource.Cancel();
-            }
-            cancellationTokenSource = new CancellationTokenSource();
-            var token = cancellationTokenSource.Token;
-            try
-            {
-                double rd = 0;
-                double a = -0.8; // 假設列車減速時加速度為 - 0.8 m/s²
-                do
-                {
-                    if (token.IsCancellationRequested)
-                    {
-                        cancellationTokenSource = null;
-                        return;
-                    }
-                    double u = train.speed / 3.6;
-                    u = u + a * 1.0;
-                    rd = rd + (-a) * 1.0;
-                    train.speed = u * 3.6;
-                    train_change(sender, e);
-                    await Task.Delay(1000);
-                } while (rd * 3.6 < 10.0);
-            }
-            catch (TaskCanceledException)
-            {
-                //Nothing...
-            }
-            finally
-            {
-                cancellationTokenSource = null;
-            }
-        }
-        private async void button5_Click(object sender, EventArgs e)
-        {
-            if (comboBox1.SelectedIndex != -1)
-            {
-                button3.Enabled = button4.Enabled = false;
-                if (button5.Text == "煞車")
-                {
-                    button5.Text = "啟動";
-                    trains[comboBox1.SelectedIndex].wait = -3;
-                    await braking(sender,e);
+                    button3.Text = "啟動";
+                    train.wait = -2;
+                    await braking(sender, e, train);
                     label7.Text = $"列車已停止\r\n時間 : {DateTime.Now.ToString("T")}";
                 }
                 else
                 {
-                    button5.Text = "煞車";
-                    await active(sender, e);
+                    button3.Text = "煞車";
+                    train.wait = 0;
+                    await active(sender, e, train);
                     label7.Text = $"列車已啟動\r\n時間 : {DateTime.Now.ToString("T")}";
                 }
-                button3.Enabled = button4.Enabled = true;
             }
-
         }
-        private async Task braking(object sender, EventArgs e)
+        private void button4_Click(object sender, EventArgs e)
         {
-            Train train = trains[comboBox1.SelectedIndex];
+            Train train = Traffic.trains[comboBox1.SelectedIndex];
+            if (train.wait != -2)
+            {
+                train.wait = -2;
+                button3.Enabled = false;
+                button4.Text = "發車";
+                label7.Text = $"列車已臨停\r\n時間 : {DateTime.Now.ToString("T")}";
+            }
+            else
+            {
+                train.wait = 0;
+                button4.Enabled = true;
+                button4.Text = "停靠站";
+                label7.Text = $"列車已發車\r\n時間 : {DateTime.Now.ToString("T")}";
+            }
+        }
+        private async Task braking(object sender, EventArgs e,Train train)
+        {
             if (cancellationTokenSource != null)
             {
                 cancellationTokenSource.Cancel();
@@ -638,7 +534,7 @@ namespace 簡易的行控中心
             try
             {
                 double rd = train.speed;
-                double a = -2.5; // 假設列車急煞時加速度為 - 2.5 m/s²
+                double a = -3.0; // 假設列車急煞時加速度為 - 3.0 m/s²
                 do
                 {
                     if (token.IsCancellationRequested)
@@ -650,7 +546,7 @@ namespace 簡易的行控中心
                     u = u + a * 1.0;
                     train.speed = u < 0 ? 0 : u * 3.6;
                     train_change(sender, e);
-                    train.change_image("B");
+                    ((Track)Traffic.traffics[train.cur]).change_image("B", train.next);
                     train_set();
                     await Task.Delay(1000);
                 } while (train.speed > 0);
@@ -664,18 +560,17 @@ namespace 簡易的行控中心
                 cancellationTokenSource = null;
             }
         }
-        private async Task active(object sender,EventArgs e)
+        private async Task active(object sender, EventArgs e, Train train)
         {
-            Train train = trains[comboBox1.SelectedIndex];
             if (cancellationTokenSource != null)
             {
                 cancellationTokenSource.Cancel();
             }
             cancellationTokenSource = new CancellationTokenSource();
-            if ((train.wait >= 0 || train.wait == -2) && (train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2) != null)
+            if (train.cur + train.next >= 0 && train.cur + train.next < Traffic.traffics.Count && (train.cur + 2) % 2 == 0)
             {
-                train.cur_st = train.next_bool ? ((Station)train.cur_st).track1 : ((Station)train.cur_st).track2;
-                train.change_image("O");
+                train.cur += train.next;
+                ((Track)Traffic.traffics[train.cur]).change_image("O", train.next);
                 train.stats = "正在行駛中";
             }
             train.wait = 0;
@@ -684,7 +579,7 @@ namespace 簡易的行控中心
             try
             {
                 double rd = train.speed;
-                double a = 1.0; // 假設列車啟動時加速度為 1.0 m/s²
+                double a = 2.5; // 假設列車啟動時加速度為 2.5 m/s²
                 do
                 {
                     try
@@ -701,9 +596,9 @@ namespace 簡易的行控中心
                     }
                     double u = train.speed / 3.6;
                     u = u + a * 1.0;
-                    trains[comboBox1.SelectedIndex].speed = u * 3.6 > 110.0 ? 110.0 : u * 3.6;
+                    Traffic.trains[comboBox1.SelectedIndex].speed = u * 3.6 > 110.0 ? 110.0 : u * 3.6;
                     train_change(sender, e);
-                    train.change_image("B");
+                    ((Track)Traffic.traffics[train.cur]).change_image("B", train.next);
                     train_set();
                     await Task.Delay(1000);
                 } while (train.speed != 110);
@@ -716,22 +611,6 @@ namespace 簡易的行控中心
             finally
             {
                 cancellationTokenSource = null;
-            }
-        }
-        private void button6_Click(object sender, EventArgs e)
-        {
-            if (trains[comboBox1.SelectedIndex].wait != -2)
-            {
-                trains[comboBox1.SelectedIndex].wait = -2;
-                button6.Text = "發車";
-                label7.Text= $"列車已臨停\r\n時間 : {DateTime.Now.ToString("T")}";
-            }
-            else
-            {
-                trains[comboBox1.SelectedIndex].wait = 0;
-                button6.Text = "停靠站";
-                button5.Text = "煞車";
-                label7.Text = $"列車已發車\r\n時間 : {DateTime.Now.ToString("T")}";
             }
         }
         #endregion
@@ -753,7 +632,10 @@ namespace 簡易的行控中心
         private void Label_Click(object sender,EventArgs args)
         {
             Label clickedLabel = sender as Label;
-            if (clickedLabel != null) comboBox2.SelectedIndex = stations.FindIndex(x => x.label.Name == clickedLabel.Name);
+            if (clickedLabel != null)
+            {
+                comboBox2.SelectedIndex = Traffic.GetIndex(clickedLabel.Text) / 2;
+            }
         }
         private void Label_MouseMove(object sender,EventArgs args)
         {

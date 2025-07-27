@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:converters="clr-namespace:簡易的行控中心.Converters"
+             x:Class="簡易的行控中心.TrainPage"
+             Title="列車狀態及操作"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+    <ContentPage.Resources>
+        <converters:PriorityToStringConverter x:Key="PriorityToStringConverter" />
+    </ContentPage.Resources>
+    <VerticalStackLayout Padding="20" Spacing="16">
+        <Label Text="選擇列車:"
+               FontAttributes="Bold"
+               FontSize="18"
+               TextColor="{DynamicResource PrimaryTextColor}"/>
+        <Picker x:Name="TrainPicker"
+                ItemsSource="{Binding Trains}"
+                ItemDisplayBinding="{Binding name}"
+                SelectedItem="{Binding SelectedTrain}"
+                TitleColor="{DynamicResource AccentColor}"
+                TextColor="{DynamicResource PrimaryTextColor}"
+                BackgroundColor="{DynamicResource CardBackgroundColor}"/>
+
+        <!-- 列車的狀態 -->
+        <HorizontalStackLayout Spacing="16">
+            <Label Text="目前時速:" TextColor="{DynamicResource PrimaryTextColor}"/>
+            <Label Text="{Binding SelectedTrain.speed}" TextColor="{DynamicResource PrimaryTextColor}"/>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout Spacing="16">
+            <Label Text="列車優先權:" TextColor="{DynamicResource PrimaryTextColor}"/>
+            <Frame Padding="0" CornerRadius="8"
+           HasShadow="False"
+           VerticalOptions="Center"
+           BackgroundColor="{DynamicResource AccentColor}">
+                <Label Text="{Binding SelectedTrain.priority, Converter={StaticResource PriorityToStringConverter}}"
+               TextColor="{DynamicResource ButtonTextColor}"
+               Padding="6,2"
+               HorizontalOptions="Center"
+               VerticalOptions="Center" />
+            </Frame>
+        </HorizontalStackLayout>
+        <HorizontalStackLayout Spacing="16">
+            <Label Text="終點站:" TextColor="{DynamicResource PrimaryTextColor}"/>
+            <Label Text="{Binding SelectedTrain.destinationNAME}" TextColor="{DynamicResource PrimaryTextColor}"/>
+        </HorizontalStackLayout>
+
+        <!-- 列車的操作 -->
+        <HorizontalStackLayout Spacing="12">
+            <Button Text="Accelerate" Command="{Binding AccelerateCommand}" />
+            <Button Text="Decelerate" Command="{Binding DecelerateCommand}" />
+            <Button Text="Start" Command="{Binding StartCommand}" />
+        </HorizontalStackLayout>
+        <!-- 所有列車總覽卡片 -->
+        <Label Text="列車總覽：" 
+       FontAttributes="Bold" 
+       FontSize="18"
+       Margin="0,30,0,0"
+       TextColor="{DynamicResource PrimaryTextColor}" />
+
+        <CollectionView ItemsSource="{Binding Trains}"
+                SelectionMode="Single"
+                SelectedItem="{Binding SelectedTrain}"
+                VerticalScrollBarVisibility="Always"
+                HeightRequest="300"
+                BackgroundColor="{DynamicResource PageBackgroundColor}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Frame Padding="12"
+                   Margin="0,8"
+                   CornerRadius="12"
+                   HasShadow="True"
+                   BackgroundColor="{DynamicResource CardBackgroundColor}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding name}"
+                                FontAttributes="Bold"
+                                FontSize="16"
+                                TextColor="{DynamicResource PrimaryTextColor}" />
+                            <Label Text="{Binding destinationNAME, StringFormat='終點站: {0} '}"
+                                FontSize="14"
+                                TextColor="Gray" />
+                            <Label Text="{Binding priority, Converter={StaticResource PriorityToStringConverter}, StringFormat='優先權: {0}'}"
+                                FontSize="14"
+                                TextColor="Gray" />
+                        </VerticalStackLayout>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
+</ContentPage>

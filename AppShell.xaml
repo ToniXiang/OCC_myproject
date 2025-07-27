@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="簡易的行控中心.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:簡易的行控中心"
+    Title="簡易的行控中心">
+    <ShellContent Title="主畫面" ContentTemplate="{DataTemplate local:HomePage}" Route="HomePage"/>
+    <ShellContent Title="車站狀態" ContentTemplate="{DataTemplate local:StationPage}" Route="StationPage"/>
+    <ShellContent Title="列車操作" ContentTemplate="{DataTemplate local:TrainPage}" Route="TrainPage"/>
+    <ShellContent Title="事件處理" ContentTemplate="{DataTemplate local:EventPage}" Route="EventPage"/>
+    <ShellContent Title="設定" ContentTemplate="{DataTemplate local:SettingPage}" Route="SettingPage"/>
+
+</Shell>

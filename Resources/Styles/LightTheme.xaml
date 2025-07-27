@@ -1,0 +1,12 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+                    x:Class="簡易的行控中心.Resources.Styles.LightTheme">
+    <Color x:Key="PageBackgroundColor">#F7F8FA</Color>
+    <Color x:Key="PrimaryTextColor">#222222</Color>
+    <Color x:Key="CardBackgroundColor">#FFFFFF</Color>
+    <Color x:Key="AccentColor">#512BD4</Color>
+    <Color x:Key="LabelTextColor">#222222</Color>
+    <Color x:Key="LabelSubTextColor">#666666</Color>
+    <Color x:Key="ButtonBackgroundColor">#512BD4</Color>
+    <Color x:Key="ButtonTextColor">White</Color>
+</ResourceDictionary>

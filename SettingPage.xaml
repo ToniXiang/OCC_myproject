@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="簡易的行控中心.SettingPage"
+             Title="設定"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="30" Spacing="25">
+
+            <Label Text="設定"
+                   FontSize="32"
+                   FontAttributes="Bold"
+                   TextColor="{DynamicResource LabelTextColor}"
+                   HorizontalOptions="Center" />
+
+            <!-- 簡介顯示開關 -->
+            <Frame CornerRadius="12" Padding="16" BackgroundColor="{DynamicResource CardBackgroundColor}">
+                <VerticalStackLayout Spacing="8">
+                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                        <Label Text="簡介說明" FontSize="18" TextColor="{DynamicResource LabelTextColor}" />
+                        <Switch x:Name="IntroductionSwitch" Toggled="IntroductionSwitch_Toggled" />
+                    </HorizontalStackLayout>
+                    <Label x:Name="IntroText"
+               Text="這是本應用程式的基本介紹，幫助您快速了解如何操作。"
+               FontSize="14"
+               IsVisible="False"
+               TextColor="{DynamicResource LabelSubTextColor}" />
+                </VerticalStackLayout>
+            </Frame>
+
+            <!-- 主題切換 -->
+            <Frame CornerRadius="12" Padding="16" BackgroundColor="{DynamicResource CardBackgroundColor}">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="深色主題" FontSize="18" TextColor="{DynamicResource LabelTextColor}" />
+                    <Switch x:Name="ThemeSwitch" Toggled="ThemeSwitch_Toggled" />
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- 語言選擇 -->
+            <Frame CornerRadius="12" Padding="16" BackgroundColor="{DynamicResource CardBackgroundColor}">
+                <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
+                    <Label Text="語言" FontSize="18" TextColor="{DynamicResource LabelTextColor}" />
+                    <Picker x:Name="LanguagePicker"
+                            WidthRequest="150"
+                            SelectedIndexChanged="LanguagePicker_SelectedIndexChanged"
+                            TextColor="{DynamicResource LabelTextColor}">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>繁體中文</x:String>
+                                <x:String>English</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                </HorizontalStackLayout>
+            </Frame>
+
+            <!-- 儲存設定提示 -->
+            <Label x:Name="StatusLabel"
+                   Text=""
+                   FontSize="14"
+                   TextColor="Green"
+                   HorizontalOptions="Center" />
+
+            <!-- 清除設定 -->
+            <Button Text="清除所有設定"
+                    FontSize="16"
+                    BackgroundColor="DarkRed"
+                    TextColor="White"
+                    Clicked="ClearSettings_Clicked"
+                    HorizontalOptions="Fill" />
+
+            <!-- 意見回饋 -->
+            <Button Text="意見回饋"
+                    FontSize="18"
+                    BackgroundColor="{DynamicResource ButtonBackgroundColor}"
+                    TextColor="{DynamicResource ButtonTextColor}"
+                    Clicked="OnFeedbackClicked"
+                    HorizontalOptions="Fill" />
+
+            <!-- 關於 -->
+            <Label Text="版本：1.0.0"
+                   FontSize="14"
+                   TextColor="{DynamicResource LabelSubTextColor}"
+                   HorizontalOptions="End" />
+            <Label Text="© 2025 陳國翔"
+                   FontSize="14"
+                   TextColor="{DynamicResource LabelSubTextColor}"
+                   HorizontalOptions="Center" />
+            <Label Text="https://chenguoxiang940.github.io/project.html"
+                   FontSize="14"
+                   HorizontalOptions="Center" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="簡易的行控中心.HomePage"
+             Title="主畫面"
+             BackgroundColor="{DynamicResource PageBackgroundColor}">
+
+    <!-- 工具列右上角設定按鈕 -->
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="設定"
+                     IconImageSource="settings_icon.png"
+                     Order="Primary"
+                     Priority="0"
+                     Clicked="OnSettingsClicked" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <Grid RowDefinitions="Auto,*,Auto" Padding="30">
+
+            <!-- 中央主內容卡片 -->
+            <VerticalStackLayout Grid.Row="1"
+                                 Spacing="20"
+                                 HorizontalOptions="Center"
+                                 VerticalOptions="Center">
+
+                <!-- 卡片區塊 -->
+                <Frame Padding="20"
+                       BackgroundColor="{DynamicResource CardBackgroundColor}"
+                       CornerRadius="20"
+                       HasShadow="True"
+                       BorderColor="{DynamicResource AccentColor}"
+                       WidthRequest="320">
+                    <VerticalStackLayout Spacing="10" HorizontalOptions="Center">
+
+                        <Image Source="dotnet_bot.png"
+                               HeightRequest="100"
+                               WidthRequest="100"/>
+
+                        <Label Text="簡易的行控中心 模擬軟體"
+                               FontSize="24"
+                               FontAttributes="Bold"
+                               TextColor="{DynamicResource LabelTextColor}"
+                               HorizontalOptions="Center"/>
+
+                        <Label Text="跨平台 .NET MAUI App 設計"
+                               FontSize="16"
+                               TextColor="{DynamicResource LabelSubTextColor}"
+                               HorizontalOptions="Center"/>
+
+                        <HorizontalStackLayout HorizontalOptions="Center"
+                                               Spacing="8"
+                                               Margin="0,8,0,0">
+                            <Image Source="clock_icon.png"
+                                   HeightRequest="20"
+                                   WidthRequest="20"/>
+                            <Label Text="{Binding CurrentDateTime}"
+                                   FontSize="18"
+                                   TextColor="{DynamicResource LabelTextColor}"/>
+                        </HorizontalStackLayout>
+
+                        <!-- 啟動模擬按鈕 -->
+                        <Button Text="{Binding SimulationButtonText}"
+                                Command="{Binding ToggleSimulationCommand}"
+                                BackgroundColor="{DynamicResource ButtonBackgroundColor}"
+                                TextColor="{DynamicResource ButtonTextColor}"
+                                FontSize="18"
+                                CornerRadius="12"
+                                Padding="12"
+                                HorizontalOptions="Center"
+                                Margin="0,20,0,0"/>
+
+                        <!-- 模擬狀態顯示 -->
+                        <Label Text="{Binding SimulationText}"
+                               FontSize="18"
+                               TextColor="{DynamicResource LabelTextColor}"
+                               HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Frame>
+            </VerticalStackLayout>
+        </Grid>
+    </ScrollView>
+</ContentPage>

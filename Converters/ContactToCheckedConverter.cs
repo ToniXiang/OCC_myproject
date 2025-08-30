@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.Globalization;
 using Microsoft.Maui.Controls;
 
-namespace 簡易的行控中心;
+namespace 簡易的行控中心.Converters;
 
 public class ContactToCheckedConverter : IValueConverter
 {

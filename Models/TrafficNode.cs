@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrafficNode
+namespace 簡易的行控中心.Models
 {
     public interface TrafficNode
     {
@@ -60,7 +60,7 @@ namespace TrafficNode
             speed = 0;
             stats = $"停靠 {((Station)Traffic.traffics[start]).name} 中";
         }
-        public void move() => length += (speed == 0 ? 0 : speed / 3600);
+        public void move() => length += speed == 0 ? 0 : speed / 3600;
     }
     public class Traffic
     {

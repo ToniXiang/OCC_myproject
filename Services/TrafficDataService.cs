@@ -1,7 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
-using TrafficNode;
+using 簡易的行控中心.Models;
 
 public class TrafficDataService : INotifyPropertyChanged
 {

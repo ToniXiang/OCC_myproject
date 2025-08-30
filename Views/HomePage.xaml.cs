@@ -1,4 +1,4 @@
-﻿using TrafficNode;
+﻿using 簡易的行控中心.Models;
 using 簡易的行控中心.ViewModels;
 namespace 簡易的行控中心;
 
@@ -22,11 +22,11 @@ public partial class HomePage : ContentPage
             }
             var lastStation = new Station(Traffic.info.Last(), platform.Last(), prio.Last());
             Traffic.traffics.Add(lastStation);
-            Traffic.trains.Add(new TrafficNode.Train("3104", 0, "台北", "彰化"));
-            Traffic.trains.Add(new TrafficNode.Train("3211", 0, "新北", "桃園"));
-            Traffic.trains.Add(new TrafficNode.Train("3288", 0, "台中", "彰化"));
-            Traffic.trains.Add(new TrafficNode.Train("3518", 0, "彰化", "新竹"));
-            Traffic.trains.Add(new TrafficNode.Train("3704", 0, "桃園", "台北"));
+            Traffic.trains.Add(new Train("3104", 0, "台北", "彰化"));
+            Traffic.trains.Add(new Train("3211", 0, "新北", "桃園"));
+            Traffic.trains.Add(new Train("3288", 0, "台中", "彰化"));
+            Traffic.trains.Add(new Train("3518", 0, "彰化", "新竹"));
+            Traffic.trains.Add(new Train("3704", 0, "桃園", "台北"));
 
             Traffic.IsInitialized = true;
         }

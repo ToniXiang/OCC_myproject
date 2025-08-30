@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;
 using System.Linq;
-using TrafficNode;
+using 簡易的行控中心.Models;
 
 namespace 簡易的行控中心.ViewModels
 {

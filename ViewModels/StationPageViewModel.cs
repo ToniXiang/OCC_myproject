@@ -2,8 +2,8 @@
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Xml;
-using TrafficNode;
 using CommunityToolkit.Mvvm.Messaging;
+using 簡易的行控中心.Models;
 
 namespace 簡易的行控中心.ViewModels
 {

@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:簡易的行控中心.Converters"
              xmlns:vm="clr-namespace:簡易的行控中心.ViewModels"
-             xmlns:models="clr-namespace:TrafficNode"
+             xmlns:models="clr-namespace:簡易的行控中心.Models"
              x:Class="簡易的行控中心.TrainPage"
              x:DataType="vm:TrainPageViewModel"
              Title="列車狀態及操作"

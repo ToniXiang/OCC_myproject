@@ -24,9 +24,8 @@ public partial class SettingPage : ContentPage
             "3. 使用模擬計算來預估列車的當前狀態\r\n" +
             "5. 路線地圖可視化展示\r\n" +
             "6. 緊急事件處理\r\n" +
-            "7. 用戶回饋連結資料庫\r\n" +
-            "8. 更多功能日後開發(維護和檢修計劃、能源管理連接資料庫)\r\n\r\n" +
-            $"© 2025 陳國翔\r\n\r\nhttps://chenguoxiang940.github.io/project.html\r\n\r\n" +
+            "7. 更多功能日後開發(維護和檢修計劃、能源管理連接資料庫)\r\n\r\n" +
+            $"© 2025 陳國翔\r\n\r\nhttps://github.com/ToniXiang\r\n\r\n" +
             $"功能介绍 - 版本 {Assembly.GetExecutingAssembly().GetName().Version}";
 
         await DisplayAlert("簡介", message, "OK");

@@ -87,9 +87,6 @@
                    FontSize="14"
                    TextColor="{DynamicResource LabelSubTextColor}"
                    HorizontalOptions="Center" />
-            <Label Text="https://chenguoxiang940.github.io/project.html"
-                   FontSize="14"
-                   HorizontalOptions="Center" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -5,7 +5,7 @@ using System.Timers;
 using System.Windows.Input;
 using TrafficNode;
 using CommunityToolkit.Mvvm.Messaging;
-namespace 簡易的行控中心
+namespace 簡易的行控中心.ViewModels
 {
     public class HomePageViewModel : INotifyPropertyChanged
     {
@@ -13,7 +13,7 @@ namespace 簡易的行控中心
         private bool _isRunning = false;
         private readonly System.Timers.Timer _timer;
         private readonly System.Timers.Timer _simulationTimer;
-        public ObservableCollection<TrafficNode.Train> Trains { get; }
+        public ObservableCollection<Train> Trains { get; }
         public ObservableCollection<Station> Stations { get; }
 
         public string CurrentDateTime
@@ -87,7 +87,7 @@ namespace 簡易的行控中心
         private void SimulationTimer_Tick(object sender, ElapsedEventArgs e)
         {
             // 若要更新 UI，需切回主執行緒
-            Microsoft.Maui.Controls.Application.Current?.Dispatcher.Dispatch(() =>
+            Application.Current?.Dispatcher.Dispatch(() =>
             {
                 foreach (var train in Traffic.trains)
                 {
@@ -156,7 +156,7 @@ namespace 簡易的行控中心
                             }
                             else
                             {
-                                end_u = end_u + (-end_a) * 1.0;
+                                end_u = end_u + -end_a * 1.0;
                                 train.speed = end_u * 3.6 < 4.0 ? 4.0 : end_u * 3.6;
                                 train.stats = "正在進站中";
                             }

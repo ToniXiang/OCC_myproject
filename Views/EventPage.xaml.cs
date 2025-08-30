@@ -1,13 +1,13 @@
-﻿using System.Text;
+﻿using 簡易的行控中心.ViewModels;
 
 namespace 簡易的行控中心;
 
 public partial class EventPage : ContentPage
 {
-    public EventPage()
+    public EventPage(EventPageViewModel vm)
     {
         InitializeComponent();
-        BindingContext = new EventPageViewModel();
+        BindingContext = vm;
     }
 
     protected override void OnAppearing()
@@ -17,7 +17,7 @@ public partial class EventPage : ContentPage
         {
             vm.SetSubmitCommand(async () =>
             {
-                var sb = new StringBuilder();
+                var sb = new System.Text.StringBuilder();
                 sb.AppendLine($"事件: {vm.EventTitle}");
                 sb.AppendLine($"車站: {vm.SelectedTrain}");
                 sb.AppendLine($"聯絡: {string.Join(", ", vm.SelectedContacts)}");
@@ -27,10 +27,19 @@ public partial class EventPage : ContentPage
             });
         }
     }
+
     private void OnContactCheckedChanged(object sender, CheckedChangedEventArgs e)
     {
         if (BindingContext is EventPageViewModel vm && sender is CheckBox cb && cb.BindingContext is string contact)
         {
+            // Prefer ViewModel command if provided
+            if (vm.ToggleContactCommand != null && vm.ToggleContactCommand.CanExecute(contact))
+            {
+                vm.ToggleContactCommand.Execute(contact);
+                return;
+            }
+
+            // Fallback: directly update collection (legacy behavior)
             if (e.Value)
             {
                 if (!vm.SelectedContacts.Contains(contact))

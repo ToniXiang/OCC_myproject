@@ -2,12 +2,14 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:簡易的行控中心.Converters"
+             xmlns:conv="clr-namespace:簡易的行控中心"
              x:Class="簡易的行控中心.EventPage"
              Title="事件處理"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
     <ContentPage.Resources>
         <ResourceDictionary>
             <local:StringNotNullOrEmptyConverter x:Key="StringNotNullOrEmptyConverter"/>
+            <conv:ContactToCheckedConverter x:Key="ContactToCheckedConverter"/>
         </ResourceDictionary>
     </ContentPage.Resources>
     <ScrollView>
@@ -29,27 +31,27 @@
             <Label Text="聯絡：" />
             <VerticalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=消防局}" CheckedChanged="OnContactCheckedChanged" BindingContext="消防局"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=消防局}" CheckedChanged="OnContactCheckedChanged" BindingContext="消防局" />
                     <Label Text="消防局" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=警察局}" CheckedChanged="OnContactCheckedChanged" BindingContext="警察局"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=警察局}" CheckedChanged="OnContactCheckedChanged" BindingContext="警察局" />
                     <Label Text="警察局" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=救援隊}" CheckedChanged="OnContactCheckedChanged" BindingContext="救援隊"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=救援隊}" CheckedChanged="OnContactCheckedChanged" BindingContext="救援隊" />
                     <Label Text="救援隊" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=醫院}" CheckedChanged="OnContactCheckedChanged" BindingContext="醫院"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=醫院}" CheckedChanged="OnContactCheckedChanged" BindingContext="醫院" />
                     <Label Text="醫院" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=維修人員}" CheckedChanged="OnContactCheckedChanged" BindingContext="維修人員"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=維修人員}" CheckedChanged="OnContactCheckedChanged" BindingContext="維修人員" />
                     <Label Text="維修人員" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
                 <HorizontalStackLayout VerticalOptions="Center">
-                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=站務人員}" CheckedChanged="OnContactCheckedChanged" BindingContext="站務人員"/>
+                    <CheckBox IsChecked="{Binding SelectedContacts, Converter={StaticResource ContactToCheckedConverter}, ConverterParameter=站務人員}" CheckedChanged="OnContactCheckedChanged" BindingContext="站務人員" />
                     <Label Text="站務人員" VerticalOptions="Center" TextColor="{DynamicResource PrimaryTextColor}"/>
                 </HorizontalStackLayout>
             </VerticalStackLayout>

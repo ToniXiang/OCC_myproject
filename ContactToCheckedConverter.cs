@@ -16,16 +16,6 @@ public class ContactToCheckedConverter : IValueConverter
 
     public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
     {
-        var isChecked = (bool)value;
-        var contact = parameter as string;
-        var selectedContacts = App.Current?.MainPage?.BindingContext as EventPageViewModel;
-        if (selectedContacts == null || contact == null)
-            return null;
-
-        // You should get the actual SelectedContacts collection from the binding context
-        // Instead, use a Command or event to update the collection in the ViewModel
-        // This is a limitation of using converters for collection updates
-
-        return null;
+        throw new NotSupportedException("ContactToCheckedConverter does not support ConvertBack. Use a command or CheckedChanged handler to modify the collection in the ViewModel.");
     }
 }

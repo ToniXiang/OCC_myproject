@@ -2,7 +2,10 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:converters="clr-namespace:簡易的行控中心.Converters"
+             xmlns:vm="clr-namespace:簡易的行控中心.ViewModels"
+             xmlns:models="clr-namespace:TrafficNode"
              x:Class="簡易的行控中心.TrainPage"
+             x:DataType="vm:TrainPageViewModel"
              Title="列車狀態及操作"
              BackgroundColor="{DynamicResource PageBackgroundColor}">
     <ContentPage.Resources>
@@ -64,7 +67,7 @@
                 HeightRequest="300"
                 BackgroundColor="{DynamicResource PageBackgroundColor}">
             <CollectionView.ItemTemplate>
-                <DataTemplate>
+                <DataTemplate x:DataType="models:Train">
                     <Frame Padding="12"
                    Margin="0,8"
                    CornerRadius="12"

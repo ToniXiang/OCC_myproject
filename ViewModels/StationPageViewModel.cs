@@ -4,7 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Xml;
 using TrafficNode;
 using CommunityToolkit.Mvvm.Messaging;
-namespace 簡易的行控中心
+
+namespace 簡易的行控中心.ViewModels
 {
     public class StationPageViewModel : INotifyPropertyChanged
     {
@@ -23,8 +24,10 @@ namespace 簡易的行控中心
                 }
             }
         }
-        public ObservableCollection<TrafficNode.Train> Trains { get; }
+
+        public ObservableCollection<Train> Trains { get; }
         public ObservableCollection<Station> Stations { get; }
+
         public StationPageViewModel(TrafficDataService dataService)
         {
             Trains = dataService.Trains;
@@ -33,11 +36,12 @@ namespace 簡易的行控中心
             if (Stations.Count > 0)
                 SelectedStation = Stations[0];
         }
+
         #region 更新時間表
         private void UpdateTimetable()
         {
             Timetable.Clear();
-            foreach (TrafficNode.Train train in Traffic.trains)
+            foreach (Train train in Traffic.trains)
             {
                 int cur_index = train.cur;
                 double total_length = -train.length;
@@ -86,11 +90,14 @@ namespace 簡易的行控中心
             OnPropertyChanged(nameof(Timetable));
         }
         #endregion
+
         public ObservableCollection<TimetableEntry> Timetable { get; } = new();
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
             => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
+
     public class TimetableEntry 
     {
         public string TrainNumber { get; set; }

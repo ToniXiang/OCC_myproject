@@ -12,7 +12,6 @@ using System.Media;
 using System.Data.SqlClient;
 using System.IO;
 using System.Reflection;
-using static 簡易的行控中心.Form2;
 using 簡易的行控中心.TrafficComponents;
 namespace 簡易的行控中心
 {
@@ -112,52 +111,9 @@ namespace 簡易的行控中心
         private void pictureBox3_Click(object sender, EventArgs e)
         {
             DialogResult result = new DialogResult();
-            using (Form2 f2 = new Form2())
-            {
-                f2.Focus();
-                f2.DataInputCompleted += Form2_DataInputCompleted;
-                result = f2.ShowDialog();
-                f2.Dispose();
-            }
             result = MessageBox.Show("確定要離開嗎?", "離開", MessageBoxButtons.YesNo);
             if (result == DialogResult.Yes) Application.Exit();
         }
-        private async void Form2_DataInputCompleted(object sender, DICEventArgs e)
-        {
-            try
-            {
-                using(SqlConnection sql = new SqlConnection("Data Source=DESKTOP-Q78F81O,1433;Initial Catalog=OCC_DB;Integrated Security=True"))
-                {
-                    if (sql.State == ConnectionState.Closed) await sql.OpenAsync();
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Table_1 (電子郵件,回饋類型,具體內容,是否願意參與進一步討論或測試新功能,日期) VALUES (@email, @type, @content,@isok,@day)", sql))
-                    {
-                        //欄位名 資料類型
-                        cmd.Parameters.AddWithValue("@email", e.email);//電子郵件 nvarchar(30)
-                        cmd.Parameters.AddWithValue("@type", e.type);//回饋類型 nvarchar(20)
-                        cmd.Parameters.AddWithValue("@content", e.content);//具體內容 nchar(50)
-                        cmd.Parameters.AddWithValue("@isok", e.isOK);//是否願意參與進一步討論或測試新功能 bit
-                        cmd.Parameters.AddWithValue("@day", DateTime.Now.ToString("d"));//日期 nchar(10)
-                        cmd.ExecuteNonQuery();
-                    }
-                    sql.Close();
-                }               
-            }
-            catch (TaskCanceledException)
-            {
-                // 請使用自己的資料庫連接資訊，確保應用程式能夠正常連接至資料庫並運行
-                // 請確認資料庫的連接字串是否正確，包括伺服器名稱、連接埠、資料庫名稱，以及是否使用正確的驗證方式。
-                //Nothing...
-            }
-        }
-        /*
-         * 補充註解：
-         *  1.顯示回饋表單（Form2），用於讓使用者輸入資料。表單顯示於最上層。
-         *  2.當使用者輸入完成後，透過 DataInputCompleted 事件回傳資料。
-         *  3.在使用者輸入完成並關閉表單後，與資料庫的連線（異步打開與關閉）並將有完整填寫的回饋資料存入資料庫並關
-         *  4.系統彈出確認對話框，詢問使用者是否要離開應用程式。
-         *  
-         *  using 語句可以確保 (...) 在使用完畢後正確地釋放資源
-         */
         #endregion
         #region 時間_多執行緒
         private void timer1_Tick(object sender, EventArgs e)
